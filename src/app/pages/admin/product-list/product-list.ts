@@ -68,17 +68,21 @@ export class AdminProductListPage implements OnInit {
   }
 
   async deleteProduct(id: string) {
-    if (!confirm('Tem certeza que deseja deletar este produto?')) {
+    const product = this.products().find(p => p.id === id);
+    const productName = product?.name || 'este produto';
+    
+    if (!confirm(`⚠️ Tem certeza que deseja deletar "${productName}"?\n\nEsta ação não pode ser desfeita.`)) {
       return;
     }
 
     this.deleting.set(id);
     try {
       await this.productService.deleteProduct(id);
+      alert('✓ Produto deletado com sucesso!');
       await this.loadProducts();
     } catch (error) {
       console.error('Error deleting product:', error);
-      alert('Erro ao deletar produto');
+      alert('✗ Erro ao deletar produto. Tente novamente.');
     } finally {
       this.deleting.set(null);
     }

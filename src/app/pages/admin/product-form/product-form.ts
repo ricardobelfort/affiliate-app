@@ -93,14 +93,17 @@ export class AdminProductFormPage implements OnInit {
       
       if (this.isEditMode && this.productId) {
         await this.productService.updateProduct(this.productId, formValue);
+        alert('✓ Produto atualizado com sucesso!');
       } else {
         await this.productService.addProduct(formValue);
+        alert('✓ Produto criado com sucesso!');
       }
 
       this.router.navigate(['/admin/products']);
     } catch (error) {
       console.error('Error saving product:', error);
-      alert('Erro ao salvar produto');
+      const action = this.isEditMode ? 'atualizar' : 'criar';
+      alert(`✗ Erro ao ${action} produto. Tente novamente.`);
     } finally {
       this.saving.set(false);
     }
