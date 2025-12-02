@@ -1,0 +1,191 @@
+<div>
+  <div class="md:flex md:items-center md:justify-between">
+    <div class="flex-1 min-w-0">
+      <h2 class="text-2xl font-bold leading-7 text-gray-900 sm:text-3xl sm:truncate">
+        {{ isEditMode ? 'Editar Produto' : 'Novo Produto' }}
+      </h2>
+    </div>
+  </div>
+
+  @if (loading()) {
+    <div class="mt-8 flex justify-center">
+      <div class="animate-spin rounded-full h-12 w-12 border-b-2 border-emerald-600"></div>
+    </div>
+  } @else {
+    <form [formGroup]="form" (ngSubmit)="onSubmit()" class="mt-8 space-y-8 divide-y divide-gray-200">
+      <div class="space-y-8 divide-y divide-gray-200">
+        <div>
+          <div class="mt-6 grid grid-cols-1 gap-y-6 gap-x-4 sm:grid-cols-6">
+            <!-- Nome -->
+            <div class="sm:col-span-4">
+              <label for="name" class="block text-sm font-medium text-gray-700">
+                Nome do Produto *
+              </label>
+              <div class="mt-1">
+                <input
+                  type="text"
+                  id="name"
+                  formControlName="name"
+                  class="shadow-sm focus:ring-emerald-500 focus:border-emerald-500 block w-full sm:text-sm border-gray-300 rounded-md"
+                  [class.border-red-300]="form.get('name')?.invalid && form.get('name')?.touched"
+                />
+                @if (form.get('name')?.invalid && form.get('name')?.touched) {
+                  <p class="mt-2 text-sm text-red-600">{{ getError('name') }}</p>
+                }
+              </div>
+            </div>
+
+            <!-- Descrição Curta -->
+            <div class="sm:col-span-6">
+              <label for="shortDescription" class="block text-sm font-medium text-gray-700">
+                Descrição Curta *
+              </label>
+              <div class="mt-1">
+                <input
+                  type="text"
+                  id="shortDescription"
+                  formControlName="shortDescription"
+                  class="shadow-sm focus:ring-emerald-500 focus:border-emerald-500 block w-full sm:text-sm border-gray-300 rounded-md"
+                  [class.border-red-300]="form.get('shortDescription')?.invalid && form.get('shortDescription')?.touched"
+                />
+                @if (form.get('shortDescription')?.invalid && form.get('shortDescription')?.touched) {
+                  <p class="mt-2 text-sm text-red-600">{{ getError('shortDescription') }}</p>
+                }
+              </div>
+            </div>
+
+            <!-- Descrição -->
+            <div class="sm:col-span-6">
+              <label for="description" class="block text-sm font-medium text-gray-700">
+                Descrição Completa *
+              </label>
+              <div class="mt-1">
+                <textarea
+                  id="description"
+                  formControlName="description"
+                  rows="4"
+                  class="shadow-sm focus:ring-emerald-500 focus:border-emerald-500 block w-full sm:text-sm border-gray-300 rounded-md"
+                  [class.border-red-300]="form.get('description')?.invalid && form.get('description')?.touched"
+                ></textarea>
+                @if (form.get('description')?.invalid && form.get('description')?.touched) {
+                  <p class="mt-2 text-sm text-red-600">{{ getError('description') }}</p>
+                }
+              </div>
+            </div>
+
+            <!-- Preço -->
+            <div class="sm:col-span-2">
+              <label for="price" class="block text-sm font-medium text-gray-700">
+                Preço (R$) *
+              </label>
+              <div class="mt-1">
+                <input
+                  type="number"
+                  id="price"
+                  formControlName="price"
+                  step="0.01"
+                  class="shadow-sm focus:ring-emerald-500 focus:border-emerald-500 block w-full sm:text-sm border-gray-300 rounded-md"
+                  [class.border-red-300]="form.get('price')?.invalid && form.get('price')?.touched"
+                />
+                @if (form.get('price')?.invalid && form.get('price')?.touched) {
+                  <p class="mt-2 text-sm text-red-600">{{ getError('price') }}</p>
+                }
+              </div>
+            </div>
+
+            <!-- Categoria -->
+            <div class="sm:col-span-2">
+              <label for="category" class="block text-sm font-medium text-gray-700">
+                Categoria *
+              </label>
+              <div class="mt-1">
+                <select
+                  id="category"
+                  formControlName="category"
+                  class="shadow-sm focus:ring-emerald-500 focus:border-emerald-500 block w-full sm:text-sm border-gray-300 rounded-md"
+                  [class.border-red-300]="form.get('category')?.invalid && form.get('category')?.touched"
+                >
+                  <option value="">Selecione...</option>
+                  @for (cat of categories(); track cat.id) {
+                    <option [value]="cat.slug">{{ cat.name }}</option>
+                  }
+                </select>
+                @if (form.get('category')?.invalid && form.get('category')?.touched) {
+                  <p class="mt-2 text-sm text-red-600">{{ getError('category') }}</p>
+                }
+              </div>
+            </div>
+
+            <!-- URL da Imagem -->
+            <div class="sm:col-span-6">
+              <label for="image" class="block text-sm font-medium text-gray-700">
+                URL da Imagem *
+              </label>
+              <div class="mt-1">
+                <input
+                  type="url"
+                  id="image"
+                  formControlName="image"
+                  placeholder="https://..."
+                  class="shadow-sm focus:ring-emerald-500 focus:border-emerald-500 block w-full sm:text-sm border-gray-300 rounded-md"
+                  [class.border-red-300]="form.get('image')?.invalid && form.get('image')?.touched"
+                />
+                @if (form.get('image')?.invalid && form.get('image')?.touched) {
+                  <p class="mt-2 text-sm text-red-600">{{ getError('image') }}</p>
+                }
+              </div>
+              @if (form.get('image')?.value && form.get('image')?.valid) {
+                <div class="mt-2">
+                  <img [src]="form.get('image')?.value" alt="Preview" class="h-32 w-32 object-cover rounded">
+                </div>
+              }
+            </div>
+
+            <!-- Link de Afiliado -->
+            <div class="sm:col-span-6">
+              <label for="affiliateLink" class="block text-sm font-medium text-gray-700">
+                Link de Afiliado *
+              </label>
+              <div class="mt-1">
+                <input
+                  type="url"
+                  id="affiliateLink"
+                  formControlName="affiliateLink"
+                  placeholder="https://..."
+                  class="shadow-sm focus:ring-emerald-500 focus:border-emerald-500 block w-full sm:text-sm border-gray-300 rounded-md"
+                  [class.border-red-300]="form.get('affiliateLink')?.invalid && form.get('affiliateLink')?.touched"
+                />
+                @if (form.get('affiliateLink')?.invalid && form.get('affiliateLink')?.touched) {
+                  <p class="mt-2 text-sm text-red-600">{{ getError('affiliateLink') }}</p>
+                }
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="pt-5">
+        <div class="flex justify-end gap-3">
+          <button
+            type="button"
+            (click)="cancel()"
+            class="bg-white py-2 px-4 border border-gray-300 rounded-md shadow-sm text-sm font-medium text-gray-700 hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-emerald-500"
+          >
+            Cancelar
+          </button>
+          <button
+            type="submit"
+            [disabled]="saving()"
+            class="inline-flex justify-center py-2 px-4 border border-transparent shadow-sm text-sm font-medium rounded-md text-white bg-emerald-600 hover:bg-emerald-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-emerald-500 disabled:opacity-50"
+          >
+            @if (saving()) {
+              <span>Salvando...</span>
+            } @else {
+              <span>{{ isEditMode ? 'Atualizar' : 'Criar' }} Produto</span>
+            }
+          </button>
+        </div>
+      </div>
+    </form>
+  }
+</div>

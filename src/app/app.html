@@ -1,5 +1,9 @@
 <div class="flex flex-col min-h-screen">
-  <app-header />
+  @if (showHeaderFooter) {
+    <app-header />
+  }
   <router-outlet />
-  <app-footer />
+  @if (showHeaderFooter) {
+    <app-footer />
+  }
 </div>

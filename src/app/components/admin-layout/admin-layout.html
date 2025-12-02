@@ -1,0 +1,60 @@
+<div class="flex h-screen bg-gray-50">
+  <!-- Sidebar -->
+  <aside class="w-52 bg-gray-900 text-white flex flex-col">
+    <!-- Logo -->
+    <div class="p-6">
+      <h1 class="text-lg font-semibold">Admin Panel</h1>
+    </div>
+    
+    <!-- Navigation -->
+    <nav class="flex-1 px-4 space-y-1">
+      <a
+        routerLink="/admin/products"
+        routerLinkActive="bg-gray-800"
+        class="flex items-center gap-3 px-3 py-2 text-sm font-medium rounded-md text-gray-300 hover:bg-gray-800 hover:text-white transition-colors"
+      >
+        <svg class="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4" />
+        </svg>
+        Produtos
+      </a>
+
+      <a
+        routerLink="/"
+        target="_blank"
+        class="flex items-center gap-3 px-3 py-2 text-sm font-medium rounded-md text-gray-300 hover:bg-gray-800 hover:text-white transition-colors"
+      >
+        <svg class="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
+        </svg>
+        Ver Site
+      </a>
+
+      <button
+        (click)="logout()"
+        class="w-full flex items-center gap-3 px-3 py-2 text-sm font-medium rounded-md text-gray-300 hover:bg-gray-800 hover:text-white transition-colors"
+      >
+        <svg class="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1" />
+        </svg>
+        Sair
+      </button>
+    </nav>
+  </aside>
+
+  <!-- Main Content Area -->
+  <div class="flex-1 flex flex-col overflow-hidden">
+    <!-- Top Header -->
+    <header class="bg-white border-b border-gray-200 px-8 py-4">
+      <h2 class="text-xl font-semibold text-gray-800">Painel Administrativo</h2>
+    </header>
+
+    <!-- Page Content -->
+    <main class="flex-1 overflow-y-auto">
+      <div class="p-8">
+        <router-outlet></router-outlet>
+      </div>
+    </main>
+  </div>
+</div>
