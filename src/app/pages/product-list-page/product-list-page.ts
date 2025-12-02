@@ -4,13 +4,12 @@ import { ActivatedRoute, Router } from '@angular/router';
 import { ProductService } from '../../services/product.service';
 import { Product, Category, ProductFilters } from '../../models/product.model';
 import { ProductList } from '../../components/product-list/product-list';
-import { ProductFiltersComponent } from '../../components/product-filters/product-filters';
 import { Pagination } from '../../components/pagination/pagination';
 
 @Component({
   standalone: true,
   selector: 'app-product-list-page',
-  imports: [CommonModule, ProductList, ProductFiltersComponent, Pagination],
+  imports: [CommonModule, ProductList, Pagination],
   templateUrl: './product-list-page.html',
   styleUrl: './product-list-page.css',
   changeDetection: ChangeDetectionStrategy.OnPush,
@@ -29,6 +28,9 @@ export class ProductListPage implements OnInit {
   total = signal(0);
   pageSize = 9;
   currentFilters = signal<ProductFilters>({});
+  selectedSort = signal<string>('relevant');
+  selectedCategory = signal<string>('');
+  selectedPriceRange = signal<string>('');
 
   ngOnInit() {
     this.loadCategories();
@@ -91,6 +93,79 @@ export class ProductListPage implements OnInit {
     this.currentFilters.update(f => ({ ...f, search: query }));
     this.currentPage.set(1);
     this.updateQueryParams();
+    this.loadProducts();
+  }
+
+  onSortChange(event: Event) {
+    const select = event.target as HTMLSelectElement;
+    const sortValue = select.value;
+    this.selectedSort.set(sortValue);
+    
+    let sortBy: 'recent' | 'price-asc' | 'price-desc' | 'discount' | undefined;
+    
+    switch(sortValue) {
+      case 'price-asc':
+        sortBy = 'price-asc';
+        break;
+      case 'price-desc':
+        sortBy = 'price-desc';
+        break;
+      case 'bestseller':
+        sortBy = 'recent';
+        break;
+      default:
+        sortBy = undefined;
+    }
+    
+    this.currentFilters.update(f => ({ ...f, sortBy }));
+    this.currentPage.set(1);
+    this.loadProducts();
+  }
+
+  onCategoryChange(event: Event) {
+    const select = event.target as HTMLSelectElement;
+    const category = select.value;
+    this.selectedCategory.set(category);
+    this.currentFilters.update(f => ({ ...f, category: category || undefined }));
+    this.currentPage.set(1);
+    this.loadProducts();
+  }
+
+  onPriceRangeChange(event: Event) {
+    const select = event.target as HTMLSelectElement;
+    const range = select.value;
+    this.selectedPriceRange.set(range);
+    
+    let priceRange: { min: number, max: number } | undefined;
+    
+    switch(range) {
+      case '0-200':
+        priceRange = { min: 0, max: 200 };
+        break;
+      case '200-500':
+        priceRange = { min: 200, max: 500 };
+        break;
+      case '500-1000':
+        priceRange = { min: 500, max: 1000 };
+        break;
+      case '1000+':
+        priceRange = { min: 1000, max: 99999 };
+        break;
+      default:
+        priceRange = undefined;
+    }
+    
+    this.currentFilters.update(f => ({ ...f, priceRange }));
+    this.currentPage.set(1);
+    this.loadProducts();
+  }
+
+  clearAllFilters() {
+    this.selectedCategory.set('');
+    this.selectedPriceRange.set('');
+    this.selectedSort.set('relevant');
+    this.currentFilters.set({});
+    this.currentPage.set(1);
     this.loadProducts();
   }
 

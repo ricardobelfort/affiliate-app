@@ -3,11 +3,14 @@
     <!-- Filter Toolbar -->
     <div class="mb-6 flex flex-wrap items-center gap-3">
       <div class="relative">
-        <select class="appearance-none bg-white pl-4 pr-10 py-2 border border-gray-300 rounded-lg text-sm font-medium text-gray-700 hover:border-gray-400 focus:outline-none focus:ring-2 focus:ring-emerald-500 cursor-pointer">
-          <option>Tipo de Fone</option>
-          <option>In-Ear</option>
-          <option>Over-Ear</option>
-          <option>On-Ear</option>
+        <select 
+          [value]="selectedCategory()"
+          (change)="onCategoryChange($event)"
+          class="appearance-none bg-white pl-4 pr-10 py-2 border border-gray-300 rounded-lg text-sm font-medium text-gray-700 hover:border-gray-400 focus:outline-none focus:ring-2 focus:ring-emerald-500 cursor-pointer">
+          <option value="">Categoria</option>
+          @for (category of categories(); track category.id) {
+            <option [value]="category.slug">{{ category.name }}</option>
+          }
         </select>
         <div class="pointer-events-none absolute inset-y-0 right-0 flex items-center px-3 text-gray-400">
           <svg class="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -17,12 +20,15 @@
       </div>
 
       <div class="relative">
-        <select class="appearance-none bg-white pl-4 pr-10 py-2 border border-gray-300 rounded-lg text-sm font-medium text-gray-700 hover:border-gray-400 focus:outline-none focus:ring-2 focus:ring-emerald-500 cursor-pointer">
-          <option>Preço</option>
-          <option>Até R$ 200</option>
-          <option>R$ 200 - R$ 500</option>
-          <option>R$ 500 - R$ 1.000</option>
-          <option>Acima de R$ 1.000</option>
+        <select 
+          [value]="selectedPriceRange()"
+          (change)="onPriceRangeChange($event)"
+          class="appearance-none bg-white pl-4 pr-10 py-2 border border-gray-300 rounded-lg text-sm font-medium text-gray-700 hover:border-gray-400 focus:outline-none focus:ring-2 focus:ring-emerald-500 cursor-pointer">
+          <option value="">Preço</option>
+          <option value="0-200">Até R$ 200</option>
+          <option value="200-500">R$ 200 - R$ 500</option>
+          <option value="500-1000">R$ 500 - R$ 1.000</option>
+          <option value="1000+">Acima de R$ 1.000</option>
         </select>
         <div class="pointer-events-none absolute inset-y-0 right-0 flex items-center px-3 text-gray-400">
           <svg class="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -32,7 +38,7 @@
       </div>
 
       <div class="relative">
-        <select class="appearance-none bg-white pl-4 pr-10 py-2 border border-gray-300 rounded-lg text-sm font-medium text-gray-700 hover:border-gray-400 focus:outline-none focus:ring-2 focus:ring-emerald-500 cursor-pointer">
+        <select disabled class="appearance-none bg-gray-100 pl-4 pr-10 py-2 border border-gray-300 rounded-lg text-sm font-medium text-gray-400 cursor-not-allowed">
           <option>Avaliação</option>
           <option>5 estrelas</option>
           <option>4+ estrelas</option>
@@ -46,7 +52,7 @@
       </div>
 
       <div class="relative">
-        <select class="appearance-none bg-white pl-4 pr-10 py-2 border border-gray-300 rounded-lg text-sm font-medium text-gray-700 hover:border-gray-400 focus:outline-none focus:ring-2 focus:ring-emerald-500 cursor-pointer">
+        <select disabled class="appearance-none bg-gray-100 pl-4 pr-10 py-2 border border-gray-300 rounded-lg text-sm font-medium text-gray-400 cursor-not-allowed">
           <option>Cor</option>
           <option>Preto</option>
           <option>Branco</option>
@@ -61,7 +67,7 @@
       </div>
 
       <div class="relative">
-        <select class="appearance-none bg-white pl-4 pr-10 py-2 border border-gray-300 rounded-lg text-sm font-medium text-gray-700 hover:border-gray-400 focus:outline-none focus:ring-2 focus:ring-emerald-500 cursor-pointer">
+        <select disabled class="appearance-none bg-gray-100 pl-4 pr-10 py-2 border border-gray-300 rounded-lg text-sm font-medium text-gray-400 cursor-not-allowed">
           <option>Material</option>
           <option>Plástico</option>
           <option>Metal</option>
@@ -75,7 +81,7 @@
       </div>
 
       <div class="relative">
-        <select class="appearance-none bg-white pl-4 pr-10 py-2 border border-gray-300 rounded-lg text-sm font-medium text-gray-700 hover:border-gray-400 focus:outline-none focus:ring-2 focus:ring-emerald-500 cursor-pointer">
+        <select disabled class="appearance-none bg-gray-100 pl-4 pr-10 py-2 border border-gray-300 rounded-lg text-sm font-medium text-gray-400 cursor-not-allowed">
           <option>Oferta</option>
           <option>Com desconto</option>
           <option>Frete grátis</option>
@@ -87,20 +93,23 @@
         </div>
       </div>
 
-      <button class="px-4 py-2 border border-gray-300 rounded-lg text-sm font-medium text-gray-700 hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-emerald-500 cursor-pointer">
+      <button 
+        (click)="clearAllFilters()"
+        class="px-4 py-2 border border-gray-300 rounded-lg text-sm font-medium text-gray-700 hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-emerald-500 cursor-pointer">
         <svg class="w-4 h-4 inline mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
           <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16" />
         </svg>
-        Todos os Filtros
+        Limpar Filtros
       </button>
 
       <div class="ml-auto relative">
-        <select class="appearance-none bg-white pl-4 pr-10 py-2 border border-gray-300 rounded-lg text-sm font-medium text-gray-700 hover:border-gray-400 focus:outline-none focus:ring-2 focus:ring-emerald-500 cursor-pointer">
-          <option>Ordenar por</option>
-          <option>Mais Relevantes</option>
-          <option>Menor Preço</option>
-          <option>Maior Preço</option>
-          <option>Mais Vendidos</option>
+        <select 
+          (change)="onSortChange($event)"
+          class="appearance-none bg-white pl-4 pr-10 py-2 border border-gray-300 rounded-lg text-sm font-medium text-gray-700 hover:border-gray-400 focus:outline-none focus:ring-2 focus:ring-emerald-500 cursor-pointer">
+          <option value="relevant">Mais Relevantes</option>
+          <option value="price-asc">Menor Preço</option>
+          <option value="price-desc">Maior Preço</option>
+          <option value="bestseller">Mais Vendidos</option>
         </select>
         <div class="pointer-events-none absolute inset-y-0 right-0 flex items-center px-3 text-gray-400">
           <svg class="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
