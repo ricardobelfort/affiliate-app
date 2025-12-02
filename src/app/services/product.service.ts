@@ -1,14 +1,16 @@
 import { Injectable, inject } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
-import { Observable, of, delay } from 'rxjs';
+import { Observable, of, delay, from, map as rxMap } from 'rxjs';
 import { map } from 'rxjs/operators';
 import { Product, Category, ProductFilters, PaginatedProducts } from '../models/product.model';
+import { SupabaseService } from './supabase.service';
 
 @Injectable({
   providedIn: 'root'
 })
 export class ProductService {
   private http = inject(HttpClient);
+  private supabase = inject(SupabaseService);
 
   // Mock data - substituir por chamadas HTTP reais no futuro
   private mockProducts: Product[] = [
@@ -153,77 +155,235 @@ export class ProductService {
   ];
 
   getProducts(filters?: ProductFilters, page = 1, pageSize = 9): Observable<PaginatedProducts> {
-    let filteredProducts = [...this.mockProducts];
+    return from(this.fetchProducts(filters, page, pageSize));
+  }
+
+  private async fetchProducts(filters?: ProductFilters, page = 1, pageSize = 9): Promise<PaginatedProducts> {
+    let query = this.supabase.client
+      .from('products')
+      .select('*', { count: 'exact' });
 
     // Aplicar filtros
     if (filters?.search) {
-      const search = filters.search.toLowerCase();
-      filteredProducts = filteredProducts.filter(p =>
-        p.name.toLowerCase().includes(search) ||
-        p.description.toLowerCase().includes(search)
-      );
+      query = query.or(`name.ilike.%${filters.search}%,description.ilike.%${filters.search}%`);
     }
 
     if (filters?.category) {
-      filteredProducts = filteredProducts.filter(p => p.category === filters.category);
-    }
-
-    if (filters?.store) {
-      filteredProducts = filteredProducts.filter(p => p.store === filters.store);
+      query = query.eq('category', filters.category);
     }
 
     if (filters?.priceRange) {
-      filteredProducts = filteredProducts.filter(p =>
-        p.price >= filters.priceRange!.min && p.price <= filters.priceRange!.max
-      );
+      query = query
+        .gte('price', filters.priceRange.min)
+        .lte('price', filters.priceRange.max);
     }
 
     // Aplicar ordenação
     if (filters?.sortBy) {
       switch (filters.sortBy) {
         case 'recent':
-          filteredProducts.sort((a, b) => b.createdAt.getTime() - a.createdAt.getTime());
+          query = query.order('created_at', { ascending: false });
           break;
         case 'price-asc':
-          filteredProducts.sort((a, b) => a.price - b.price);
+          query = query.order('price', { ascending: true });
           break;
         case 'price-desc':
-          filteredProducts.sort((a, b) => b.price - a.price);
+          query = query.order('price', { ascending: false });
           break;
         case 'discount':
-          filteredProducts.sort((a, b) => (b.discount || 0) - (a.discount || 0));
+          query = query.order('rating', { ascending: false });
           break;
+        default:
+          query = query.order('created_at', { ascending: false });
       }
+    } else {
+      query = query.order('created_at', { ascending: false });
     }
 
-    // Paginação
-    const total = filteredProducts.length;
-    const totalPages = Math.ceil(total / pageSize);
+    // Aplicar paginação
     const start = (page - 1) * pageSize;
-    const end = start + pageSize;
-    const products = filteredProducts.slice(start, end);
+    const end = start + pageSize - 1;
+    query = query.range(start, end);
 
-    // Simular delay de API
-    return of({
+    const { data, error, count } = await query;
+
+    if (error) {
+      console.error('Error fetching products:', error);
+      throw error;
+    }
+
+    const products: Product[] = (data || []).map((p: any) => ({
+      id: p.id,
+      name: p.name,
+      description: p.description,
+      shortDescription: p.short_description,
+      price: Number(p.price),
+      image: p.image,
+      images: [p.image],
+      category: p.category,
+      store: 'Loja Parceira',
+      affiliateLink: p.affiliate_link,
+      features: [],
+      createdAt: new Date(p.created_at),
+    }));
+
+    return {
       products,
-      total,
+      total: count || 0,
       page,
       pageSize,
-      totalPages
-    }).pipe(delay(300));
+      totalPages: Math.ceil((count || 0) / pageSize)
+    };
   }
 
   getProductById(id: string): Observable<Product | undefined> {
-    const product = this.mockProducts.find(p => p.id === id);
-    return of(product).pipe(delay(200));
+    return from(this.fetchProductById(id));
+  }
+
+  private async fetchProductById(id: string): Promise<Product | undefined> {
+    const { data, error } = await this.supabase.client
+      .from('products')
+      .select('*')
+      .eq('id', id)
+      .single();
+
+    if (error || !data) {
+      console.error('Error fetching product:', error);
+      return undefined;
+    }
+
+    const p: any = data;
+    return {
+      id: p.id,
+      name: p.name,
+      description: p.description,
+      shortDescription: p.short_description,
+      price: Number(p.price),
+      image: p.image,
+      images: [p.image],
+      category: p.category,
+      store: 'Loja Parceira',
+      affiliateLink: p.affiliate_link,
+      features: [],
+      createdAt: new Date(p.created_at),
+    };
   }
 
   getCategories(): Observable<Category[]> {
-    return of(this.mockCategories);
+    return from(this.fetchCategories());
+  }
+
+  private async fetchCategories(): Promise<Category[]> {
+    const { data, error } = await this.supabase.client
+      .from('categories')
+      .select('*')
+      .order('name');
+
+    if (error) {
+      console.error('Error fetching categories:', error);
+      return [];
+    }
+
+    return (data || []).map((c: any) => ({
+      id: c.id,
+      name: c.name,
+      slug: c.slug
+    }));
   }
 
   getStores(): Observable<string[]> {
-    const stores = [...new Set(this.mockProducts.map(p => p.store))];
-    return of(stores);
+    // Por enquanto retorna array fixo, pode ser expandido depois
+    return of(['Loja Parceira']);
+  }
+
+  // Admin methods
+  async addProduct(product: Omit<Product, 'id' | 'createdAt'>): Promise<Product> {
+    const { data, error } = await (this.supabase.client as any)
+      .from('products')
+      .insert({
+        name: product.name,
+        short_description: product.shortDescription,
+        description: product.description,
+        price: product.price,
+        category: product.category,
+        image: product.image,
+        affiliate_link: product.affiliateLink,
+        rating: 0
+      })
+      .select()
+      .single();
+
+    if (error) {
+      console.error('Error adding product:', error);
+      throw error;
+    }
+
+    const p: any = data;
+    return {
+      id: p.id,
+      name: p.name,
+      description: p.description,
+      shortDescription: p.short_description,
+      price: Number(p.price),
+      image: p.image,
+      images: [p.image],
+      category: p.category,
+      store: 'Loja Parceira',
+      affiliateLink: p.affiliate_link,
+      features: [],
+      createdAt: new Date(p.created_at),
+    };
+  }
+
+  async updateProduct(id: string, product: Partial<Product>): Promise<Product> {
+    const updateData: Record<string, any> = {};
+    
+    if (product.name) updateData['name'] = product.name;
+    if (product.shortDescription) updateData['short_description'] = product.shortDescription;
+    if (product.description) updateData['description'] = product.description;
+    if (product.price) updateData['price'] = product.price;
+    if (product.category) updateData['category'] = product.category;
+    if (product.image) updateData['image'] = product.image;
+    if (product.affiliateLink) updateData['affiliate_link'] = product.affiliateLink;
+
+    const { data, error } = await (this.supabase.client as any)
+      .from('products')
+      .update(updateData)
+      .eq('id', id)
+      .select()
+      .single();
+
+    if (error) {
+      console.error('Error updating product:', error);
+      throw error;
+    }
+
+    const p: any = data;
+    return {
+      id: p.id,
+      name: p.name,
+      description: p.description,
+      shortDescription: p.short_description,
+      price: Number(p.price),
+      image: p.image,
+      images: [p.image],
+      category: p.category,
+      store: 'Loja Parceira',
+      affiliateLink: p.affiliate_link,
+      features: [],
+      createdAt: new Date(p.created_at),
+    };
+  }
+
+  async deleteProduct(id: string): Promise<void> {
+    const { error } = await this.supabase.client
+      .from('products')
+      .delete()
+      .eq('id', id);
+
+    if (error) {
+      console.error('Error deleting product:', error);
+      throw error;
+    }
   }
 }
