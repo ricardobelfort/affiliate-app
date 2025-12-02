@@ -307,7 +307,6 @@ export class ProductService {
         price: product.price,
         category: product.category,
         image: product.image,
-        affiliate_link: product.affiliateLink,
         rating: 0
       })
       .select()
@@ -318,20 +317,19 @@ export class ProductService {
       throw error;
     }
 
-    const p: any = data;
     return {
-      id: p.id,
-      name: p.name,
-      description: p.description,
-      shortDescription: p.short_description,
-      price: Number(p.price),
-      image: p.image,
-      images: [p.image],
-      category: p.category,
+      id: data.id,
+      name: data.name,
+      description: data.description,
+      shortDescription: data.short_description,
+      price: Number(data.price),
+      image: data.image,
+      images: [data.image],
+      category: data.category,
       store: 'Loja Parceira',
-      affiliateLink: p.affiliate_link,
+      affiliateLink: '',
       features: [],
-      createdAt: new Date(p.created_at),
+      createdAt: new Date(data.created_at),
     };
   }
 
@@ -344,7 +342,8 @@ export class ProductService {
     if (product.price) updateData['price'] = product.price;
     if (product.category) updateData['category'] = product.category;
     if (product.image) updateData['image'] = product.image;
-    if (product.affiliateLink) updateData['affiliate_link'] = product.affiliateLink;
+    
+    updateData['updated_at'] = new Date().toISOString();
 
     const { data, error } = await (this.supabase.client as any)
       .from('products')
@@ -369,7 +368,7 @@ export class ProductService {
       images: [p.image],
       category: p.category,
       store: 'Loja Parceira',
-      affiliateLink: p.affiliate_link,
+      affiliateLink: '',
       features: [],
       createdAt: new Date(p.created_at),
     };

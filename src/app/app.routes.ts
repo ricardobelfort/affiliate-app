@@ -6,6 +6,7 @@ import { AdminLayout } from './components/admin-layout/admin-layout';
 import { AdminProductListPage } from './pages/admin/product-list/product-list';
 import { AdminProductFormPage } from './pages/admin/product-form/product-form';
 import { AffiliateLinksPage } from './pages/admin/affiliate-links/affiliate-links';
+import { TeamStatsPage } from './pages/admin/team-stats/team-stats';
 import { authGuard } from './guards/auth.guard';
 
 export const routes: Routes = [
@@ -68,6 +69,11 @@ export const routes: Routes = [
         path: 'affiliate-links',
         component: AffiliateLinksPage,
         title: 'Meus Links Afiliados | Admin'
+      },
+      {
+        path: 'team-stats',
+        component: TeamStatsPage,
+        title: 'Indicadores de Esforço | Admin'
       }
     ]
   },

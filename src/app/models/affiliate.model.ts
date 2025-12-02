@@ -30,3 +30,22 @@ export interface UserAffiliateStats {
   conversionRate: number;
   activeLinks: number;
 }
+
+export interface TeamMemberStats {
+  userId: string;
+  email: string;
+  displayName: string;
+  totalProductsWithLinks: number;
+  totalClicks: number;
+  totalCommission: number;
+  totalConversions: number;
+}
+
+export interface TopProduct {
+  productId: string;
+  productName: string;
+  productImage: string;
+  totalClicks: number;
+  createdBy: string;
+  createdByName: string;
+}

@@ -1,7 +1,7 @@
 import { Injectable, inject } from '@angular/core';
 import { Observable, from, map } from 'rxjs';
 import { SupabaseService } from './supabase.service';
-import { UserAffiliateLink, AffiliateClick, UserAffiliateStats } from '../models/affiliate.model';
+import { UserAffiliateLink, AffiliateClick, UserAffiliateStats, TeamMemberStats, TopProduct } from '../models/affiliate.model';
 
 @Injectable({
   providedIn: 'root'
@@ -243,5 +243,69 @@ export class AffiliateService {
       commissionEarned: data.commission_earned,
       convertedAt: data.converted_at
     };
+  }
+
+  // Obter estatísticas de todos os usuários (Team Stats)
+  async getTeamStats(): Promise<TeamMemberStats[]> {
+    const { data, error } = await this.supabase.client
+      .from('team_stats')
+      .select('*')
+      .order('total_clicks', { ascending: false });
+
+    if (error) throw error;
+
+    return (data || []).map((row: any) => ({
+      userId: row.user_id,
+      email: row.email,
+      displayName: row.display_name || row.email.split('@')[0],
+      totalProductsWithLinks: row.total_products_with_links || 0,
+      totalClicks: row.total_clicks || 0,
+      totalCommission: Number(row.total_commission) || 0,
+      totalConversions: row.total_conversions || 0
+    }));
+  }
+
+  // Obter top 10 produtos mais clicados
+  async getTopProducts(limit: number = 10): Promise<TopProduct[]> {
+    const { data, error } = await this.supabase.client
+      .from('affiliate_clicks')
+      .select(`
+        product_id,
+        products:product_id (name, image),
+        user_affiliate_links!inner (
+          user_id,
+          users:user_id (
+            email,
+            raw_user_meta_data
+          )
+        )
+      `);
+
+    if (error) throw error;
+
+    // Agrupar por produto e contar cliques
+    const productMap = new Map<string, any>();
+    
+    (data || []).forEach((click: any) => {
+      const productId = click.product_id;
+      if (!productMap.has(productId)) {
+        productMap.set(productId, {
+          productId,
+          productName: click.products?.name || 'Produto',
+          productImage: click.products?.image || '',
+          totalClicks: 0,
+          createdBy: click.user_affiliate_links?.user_id || '',
+          createdByName: click.user_affiliate_links?.users?.raw_user_meta_data?.display_name || 
+                       click.user_affiliate_links?.users?.email?.split('@')[0] || 'Desconhecido'
+        });
+      }
+      const product = productMap.get(productId);
+      product.totalClicks++;
+    });
+
+    // Converter para array e ordenar
+    return Array.from(productMap.values())
+      .sort((a, b) => b.totalClicks - a.totalClicks)
+      .slice(0, limit);
   }
 }

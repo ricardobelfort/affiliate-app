@@ -5,6 +5,7 @@ import { ReactiveFormsModule, FormBuilder, FormGroup, Validators } from '@angula
 import { ProductService } from '../../../services/product.service';
 import { AmazonService } from '../../../services/amazon.service';
 import { AIService } from '../../../services/ai.service';
+import { AffiliateService } from '../../../services/affiliate.service';
 import { Category } from '../../../models/product.model';
 
 @Component({
@@ -18,6 +19,7 @@ export class AdminProductFormPage implements OnInit {
   private productService = inject(ProductService);
   private amazonService = inject(AmazonService);
   private aiService = inject(AIService);
+  private affiliateService = inject(AffiliateService);
   private router = inject(Router);
   private route = inject(ActivatedRoute);
   private fb = inject(FormBuilder);
@@ -114,13 +116,27 @@ export class AdminProductFormPage implements OnInit {
     
     try {
       const formValue = this.form.value;
+      const affiliateLink = formValue.affiliateLink;
+      
+      // Remover affiliateLink do formValue pois não vamos mais salvar na tabela products
+      const productData = { ...formValue };
+      delete productData.affiliateLink;
+      
+      let productId: string;
       
       if (this.isEditMode && this.productId) {
-        await this.productService.updateProduct(this.productId, formValue);
+        await this.productService.updateProduct(this.productId, productData);
+        productId = this.productId;
         this.successMessage.set('Produto atualizado com sucesso!');
       } else {
-        await this.productService.addProduct(formValue);
+        const newProduct = await this.productService.addProduct(productData);
+        productId = newProduct.id;
         this.successMessage.set('Produto criado com sucesso!');
+      }
+      
+      // Salvar o link de afiliado como link do usuário atual
+      if (affiliateLink) {
+        await this.affiliateService.upsertAffiliateLink(productId, affiliateLink, 5.0);
       }
 
       this.showSuccessMessage.set(true);
