@@ -3,8 +3,13 @@
     <div class="flex items-center justify-between h-16">
       <!-- Logo -->
       <div class="flex-shrink-0">
-        <a routerLink="/" class="text-2xl font-bold text-emerald-600 hover:text-emerald-700 transition-colors">
-          MinhaMarca
+        <a routerLink="/" class="flex items-center gap-2 group">
+          <div class="w-10 h-10 bg-emerald-600 rounded-lg flex items-center justify-center group-hover:bg-emerald-700 transition-colors">
+            <svg class="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z" />
+            </svg>
+          </div>
+          <span class="text-xl font-bold text-gray-900 group-hover:text-emerald-700 transition-colors">Affiliate</span>
         </a>
       </div>
 
@@ -53,6 +58,10 @@
         </a>
         <a routerLink="/contato" class="text-gray-700 hover:text-emerald-600 transition-colors font-medium">
           Contato
+        </a>
+        <span class="text-gray-300">|</span>
+        <a routerLink="/admin/login" class="text-gray-700 hover:text-emerald-600 transition-colors font-medium">
+          Login
         </a>
       </nav>
 
@@ -138,6 +147,14 @@
           class="block px-3 py-2 rounded-md text-base font-medium text-gray-700 hover:text-emerald-600 hover:bg-gray-50 transition-colors"
         >
           Contato
+        </a>
+        <div class="border-t border-gray-200 my-2"></div>
+        <a
+          routerLink="/admin/login"
+          (click)="toggleMobileMenu()"
+          class="block px-3 py-2 rounded-md text-base font-medium text-gray-700 hover:text-emerald-600 hover:bg-gray-50 transition-colors"
+        >
+          Login
         </a>
       </nav>
     </div>
