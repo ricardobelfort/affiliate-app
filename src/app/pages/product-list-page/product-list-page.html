@@ -1,0 +1,47 @@
+<div class="min-h-screen bg-gray-50">
+  <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+    <!-- Page Header -->
+    <div class="mb-8">
+      <h1 class="text-3xl font-bold text-gray-900 mb-2">Catálogo de Produtos</h1>
+      <p class="text-gray-600">Encontre as melhores ofertas em {{ total() }} produtos</p>
+    </div>
+
+    <div class="lg:grid lg:grid-cols-4 lg:gap-8">
+      <!-- Filters Sidebar -->
+      <aside class="lg:col-span-1 mb-8 lg:mb-0">
+        <app-product-filters
+          [categories]="categories()"
+          [stores]="stores()"
+          (filtersChange)="onFiltersChange($event)"
+        />
+      </aside>
+
+      <!-- Main Content -->
+      <main class="lg:col-span-3">
+        <!-- Results Info -->
+        @if (!loading()) {
+          <div class="mb-6 text-sm text-gray-600">
+            Exibindo {{ products().length }} de {{ total() }} produtos
+          </div>
+        }
+
+        <!-- Product List -->
+        <app-product-list
+          [products]="products()"
+          [loading]="loading()"
+        />
+
+        <!-- Pagination -->
+        @if (!loading() && totalPages() > 1) {
+          <div class="mt-8">
+            <app-pagination
+              [currentPage]="currentPage()"
+              [totalPages]="totalPages()"
+              (pageChange)="onPageChange($event)"
+            />
+          </div>
+        }
+      </main>
+    </div>
+  </div>
+</div>

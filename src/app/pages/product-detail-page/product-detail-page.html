@@ -1,0 +1,170 @@
+<div class="min-h-screen bg-gray-50">
+  @if (loading()) {
+    <div class="flex justify-center items-center min-h-screen">
+      <div class="animate-spin rounded-full h-16 w-16 border-b-2 border-emerald-600"></div>
+    </div>
+  } @else if (product()) {
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+      <!-- Breadcrumb -->
+      <nav class="mb-8" aria-label="Navegação">
+        <ol class="flex items-center space-x-2 text-sm">
+          <li>
+            <a routerLink="/" class="text-gray-500 hover:text-emerald-600 transition-colors">
+              Início
+            </a>
+          </li>
+          <li>
+            <svg class="w-4 h-4 text-gray-400" fill="currentColor" viewBox="0 0 20 20">
+              <path fill-rule="evenodd" d="M7.293 14.707a1 1 0 010-1.414L10.586 10 7.293 6.707a1 1 0 011.414-1.414l4 4a1 1 0 010 1.414l-4 4a1 1 0 01-1.414 0z" clip-rule="evenodd" />
+            </svg>
+          </li>
+          <li>
+            <span class="text-gray-900 font-medium">{{ product()!.name }}</span>
+          </li>
+        </ol>
+      </nav>
+
+      <div class="bg-white rounded-lg shadow-md overflow-hidden">
+        <div class="lg:grid lg:grid-cols-2 lg:gap-8 p-6 lg:p-8">
+          <!-- Product Images -->
+          <div class="mb-8 lg:mb-0">
+            <div class="aspect-square rounded-lg overflow-hidden mb-4 bg-gray-100">
+              <img
+                [src]="selectedImage()"
+                [alt]="product()!.name"
+                class="w-full h-full object-cover"
+              />
+            </div>
+
+            @if (product()!.images && product()!.images!.length > 1) {
+              <div class="grid grid-cols-4 gap-2">
+                @for (image of product()!.images; track $index) {
+                  <button
+                    type="button"
+                    (click)="selectImage(image)"
+                    [class.ring-2]="selectedImage() === image"
+                    [class.ring-emerald-600]="selectedImage() === image"
+                    class="aspect-square rounded-lg overflow-hidden bg-gray-100 hover:opacity-75 transition-opacity focus:outline-none focus:ring-2 focus:ring-emerald-500"
+                  >
+                    <img
+                      [src]="image"
+                      [alt]="product()!.name + ' - Imagem ' + ($index + 1)"
+                      class="w-full h-full object-cover"
+                    />
+                  </button>
+                }
+              </div>
+            }
+          </div>
+
+          <!-- Product Info -->
+          <div class="flex flex-col">
+            <!-- Badge -->
+            @if (product()!.badge) {
+              <div class="mb-4">
+                @if (product()!.badge === 'offer') {
+                  <span class="inline-flex items-center px-3 py-1 rounded-full text-sm font-semibold bg-red-100 text-red-800">
+                    🔥 Oferta Especial
+                  </span>
+                } @else if (product()!.badge === 'bestseller') {
+                  <span class="inline-flex items-center px-3 py-1 rounded-full text-sm font-semibold bg-emerald-100 text-emerald-800">
+                    ⭐ Mais Vendido
+                  </span>
+                } @else if (product()!.badge === 'new') {
+                  <span class="inline-flex items-center px-3 py-1 rounded-full text-sm font-semibold bg-blue-100 text-blue-800">
+                    ✨ Novo
+                  </span>
+                }
+              </div>
+            }
+
+            <!-- Title -->
+            <h1 class="text-3xl font-bold text-gray-900 mb-4">
+              {{ product()!.name }}
+            </h1>
+
+            <!-- Store -->
+            <p class="text-sm text-gray-600 mb-4">
+              Vendido por: <span class="font-medium text-gray-900">{{ product()!.store }}</span>
+            </p>
+
+            <!-- Price -->
+            <div class="mb-6">
+              @if (product()!.oldPrice) {
+                <div class="flex items-center gap-3 mb-2">
+                  <p class="text-lg text-gray-500 line-through">
+                    R$ {{ product()!.oldPrice!.toFixed(2).replace('.', ',') }}
+                  </p>
+                  @if (product()!.discount) {
+                    <span class="px-2 py-1 bg-red-100 text-red-700 text-sm font-bold rounded">
+                      -{{ product()!.discount }}%
+                    </span>
+                  }
+                </div>
+              }
+              <p class="text-4xl font-bold text-emerald-600">
+                R$ {{ product()!.price.toFixed(2).replace('.', ',') }}
+              </p>
+            </div>
+
+            <!-- Short Description -->
+            <p class="text-gray-700 mb-6">
+              {{ product()!.shortDescription }}
+            </p>
+
+            <!-- CTA Button -->
+            <a
+              [href]="product()!.affiliateLink"
+              target="_blank"
+              rel="noopener noreferrer nofollow"
+              class="inline-flex items-center justify-center w-full px-8 py-4 text-lg font-semibold text-white bg-emerald-600 rounded-lg hover:bg-emerald-700 transition-colors focus:outline-none focus:ring-4 focus:ring-emerald-500 focus:ring-offset-2 mb-8"
+            >
+              <svg class="w-6 h-6 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z" />
+              </svg>
+              Ver Oferta Completa
+            </a>
+
+            <!-- Features -->
+            @if (product()!.features && product()!.features!.length > 0) {
+              <div class="border-t border-gray-200 pt-6 mb-6">
+                <h2 class="text-lg font-semibold text-gray-900 mb-3">Características</h2>
+                <ul class="space-y-2">
+                  @for (feature of product()!.features; track $index) {
+                    <li class="flex items-start">
+                      <svg class="w-5 h-5 text-emerald-600 mr-2 mt-0.5 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20">
+                        <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd" />
+                      </svg>
+                      <span class="text-gray-700">{{ feature }}</span>
+                    </li>
+                  }
+                </ul>
+              </div>
+            }
+
+            <!-- Description -->
+            <div class="border-t border-gray-200 pt-6">
+              <h2 class="text-lg font-semibold text-gray-900 mb-3">Descrição</h2>
+              <p class="text-gray-700 leading-relaxed">
+                {{ product()!.description }}
+              </p>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Back Button -->
+      <div class="mt-8">
+        <a
+          routerLink="/"
+          class="inline-flex items-center text-emerald-600 hover:text-emerald-700 font-medium transition-colors"
+        >
+          <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18" />
+          </svg>
+          Voltar ao catálogo
+        </a>
+      </div>
+    </div>
+  }
+</div>

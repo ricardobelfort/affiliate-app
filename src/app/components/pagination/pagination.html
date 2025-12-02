@@ -1,0 +1,54 @@
+<nav aria-label="Paginação" class="flex items-center justify-center space-x-2">
+  <!-- Previous Button -->
+  <button
+    type="button"
+    (click)="goToPage(currentPage() - 1)"
+    [disabled]="currentPage() === 1"
+    [class.opacity-50]="currentPage() === 1"
+    [class.cursor-not-allowed]="currentPage() === 1"
+    class="px-3 py-2 rounded-lg border border-gray-300 bg-white text-gray-700 hover:bg-gray-50 disabled:hover:bg-white transition-colors focus:outline-none focus:ring-2 focus:ring-emerald-500"
+    aria-label="Página anterior"
+  >
+    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7" />
+    </svg>
+  </button>
+
+  <!-- Page Numbers -->
+  @for (page of pages(); track $index) {
+    @if (isNumber(page)) {
+      <button
+        type="button"
+        (click)="goToPage($any(page))"
+        [class.bg-emerald-600]="page === currentPage()"
+        [class.text-white]="page === currentPage()"
+        [class.bg-white]="page !== currentPage()"
+        [class.text-gray-700]="page !== currentPage()"
+        [class.hover:bg-emerald-700]="page === currentPage()"
+        [class.hover:bg-gray-50]="page !== currentPage()"
+        class="px-4 py-2 rounded-lg border border-gray-300 transition-colors font-medium focus:outline-none focus:ring-2 focus:ring-emerald-500"
+        [attr.aria-label]="'Página ' + page"
+        [attr.aria-current]="page === currentPage() ? 'page' : null"
+      >
+        {{ page }}
+      </button>
+    } @else {
+      <span class="px-2 text-gray-500">{{ page }}</span>
+    }
+  }
+
+  <!-- Next Button -->
+  <button
+    type="button"
+    (click)="goToPage(currentPage() + 1)"
+    [disabled]="currentPage() === totalPages()"
+    [class.opacity-50]="currentPage() === totalPages()"
+    [class.cursor-not-allowed]="currentPage() === totalPages()"
+    class="px-3 py-2 rounded-lg border border-gray-300 bg-white text-gray-700 hover:bg-gray-50 disabled:hover:bg-white transition-colors focus:outline-none focus:ring-2 focus:ring-emerald-500"
+    aria-label="Próxima página"
+  >
+    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" />
+    </svg>
+  </button>
+</nav>

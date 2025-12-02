@@ -1,0 +1,121 @@
+<header class="bg-white shadow-sm sticky top-0 z-50">
+  <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+    <div class="flex items-center justify-between h-16">
+      <!-- Logo -->
+      <div class="flex-shrink-0">
+        <a routerLink="/" class="text-2xl font-bold text-emerald-600 hover:text-emerald-700 transition-colors">
+          MinhaMarca
+        </a>
+      </div>
+
+      <!-- Search Bar - Desktop -->
+      <div class="hidden md:flex flex-1 max-w-lg mx-8">
+        <form (ngSubmit)="onSearch()" class="w-full flex">
+          <input
+            type="search"
+            [(ngModel)]="searchQuery"
+            name="search"
+            placeholder="Buscar produtos..."
+            aria-label="Buscar produtos"
+            class="flex-1 px-4 py-2 border border-gray-300 rounded-l-lg focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:border-transparent"
+          />
+          <button
+            type="submit"
+            aria-label="Buscar"
+            class="px-6 py-2 bg-emerald-600 text-white rounded-r-lg hover:bg-emerald-700 transition-colors focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:ring-offset-2"
+          >
+            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+            </svg>
+          </button>
+        </form>
+      </div>
+
+      <!-- Desktop Navigation -->
+      <nav class="hidden md:flex items-center space-x-6">
+        <a routerLink="/categorias" class="text-gray-700 hover:text-emerald-600 transition-colors font-medium">
+          Categorias
+        </a>
+        <a routerLink="/ofertas" class="text-gray-700 hover:text-emerald-600 transition-colors font-medium">
+          Ofertas
+        </a>
+        <a routerLink="/contato" class="text-gray-700 hover:text-emerald-600 transition-colors font-medium">
+          Contato
+        </a>
+      </nav>
+
+      <!-- Mobile menu button -->
+      <div class="md:hidden">
+        <button
+          type="button"
+          (click)="toggleMobileMenu()"
+          [attr.aria-expanded]="mobileMenuOpen()"
+          aria-label="Menu"
+          class="inline-flex items-center justify-center p-2 rounded-md text-gray-700 hover:text-emerald-600 hover:bg-gray-100 focus:outline-none focus:ring-2 focus:ring-inset focus:ring-emerald-500 transition-colors"
+        >
+          @if (!mobileMenuOpen()) {
+            <svg class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16" />
+            </svg>
+          } @else {
+            <svg class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+            </svg>
+          }
+        </button>
+      </div>
+    </div>
+
+    <!-- Mobile Search -->
+    <div class="md:hidden pb-4">
+      <form (ngSubmit)="onSearch()" class="flex">
+        <input
+          type="search"
+          [(ngModel)]="searchQuery"
+          name="search-mobile"
+          placeholder="Buscar produtos..."
+          aria-label="Buscar produtos"
+          class="flex-1 px-4 py-2 border border-gray-300 rounded-l-lg focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:border-transparent"
+        />
+        <button
+          type="submit"
+          aria-label="Buscar"
+          class="px-6 py-2 bg-emerald-600 text-white rounded-r-lg hover:bg-emerald-700 transition-colors focus:outline-none focus:ring-2 focus:ring-emerald-500"
+        >
+          <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+          </svg>
+        </button>
+      </form>
+    </div>
+  </div>
+
+  <!-- Mobile menu -->
+  @if (mobileMenuOpen()) {
+    <div class="md:hidden border-t border-gray-200">
+      <nav class="px-4 pt-2 pb-4 space-y-2">
+        <a
+          routerLink="/categorias"
+          (click)="toggleMobileMenu()"
+          class="block px-3 py-2 rounded-md text-base font-medium text-gray-700 hover:text-emerald-600 hover:bg-gray-50 transition-colors"
+        >
+          Categorias
+        </a>
+        <a
+          routerLink="/ofertas"
+          (click)="toggleMobileMenu()"
+          class="block px-3 py-2 rounded-md text-base font-medium text-gray-700 hover:text-emerald-600 hover:bg-gray-50 transition-colors"
+        >
+          Ofertas
+        </a>
+        <a
+          routerLink="/contato"
+          (click)="toggleMobileMenu()"
+          class="block px-3 py-2 rounded-md text-base font-medium text-gray-700 hover:text-emerald-600 hover:bg-gray-50 transition-colors"
+        >
+          Contato
+        </a>
+      </nav>
+    </div>
+  }
+</header>
