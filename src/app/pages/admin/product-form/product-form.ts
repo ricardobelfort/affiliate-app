@@ -60,7 +60,9 @@ export class AdminProductFormPage implements OnInit {
       shortDescription: ['', [Validators.required, Validators.minLength(10), Validators.maxLength(160)]],
       description: ['', [Validators.required, Validators.minLength(20), Validators.maxLength(1000)]],
       price: ['', [Validators.required, Validators.min(0)]],
+      oldPrice: [''],
       category: ['', Validators.required],
+      storeType: ['', Validators.required],
       image: ['', [Validators.required, Validators.pattern(/^https?:\/\/.+/)]],
       affiliateLink: ['', [Validators.required, Validators.pattern(/^https?:\/\/.+/)]]
     });
@@ -92,7 +94,9 @@ export class AdminProductFormPage implements OnInit {
             shortDescription: product.shortDescription,
             description: product.description,
             price: product.price,
+            oldPrice: product.oldPrice || '',
             category: product.category,
+            storeType: product.storeType || 'outros',
             image: product.image,
             affiliateLink: product.affiliateLink
           });

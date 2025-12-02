@@ -2,10 +2,11 @@ import { Component, input, inject, ChangeDetectionStrategy } from '@angular/core
 import { CommonModule } from '@angular/common';
 import { Product } from '../../models/product.model';
 import { AffiliateService } from '../../services/affiliate.service';
+import { StoreBadgeComponent } from '../store-badge/store-badge';
 
 @Component({
   selector: 'app-product-card',
-  imports: [CommonModule],
+  imports: [CommonModule, StoreBadgeComponent],
   templateUrl: './product-card.html',
   styleUrl: './product-card.css',
   changeDetection: ChangeDetectionStrategy.OnPush,

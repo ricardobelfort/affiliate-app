@@ -1,4 +1,19 @@
 <div class="relative bg-white rounded-lg border border-gray-200 overflow-hidden hover:shadow-lg transition-all duration-300 group">
+  <!-- Badges Container -->
+  <div class="absolute top-3 left-3 z-10 flex flex-col gap-2">
+    <!-- Store Badge -->
+    @if (product().storeType) {
+      <app-store-badge [storeType]="product().storeType!" />
+    }
+    
+    <!-- Discount Badge -->
+    @if (product().oldPrice && product().oldPrice! > product().price) {
+      <span class="inline-flex items-center px-2.5 py-1 rounded-full text-xs font-bold bg-red-500 text-white shadow-md">
+        -{{ ((product().oldPrice! - product().price) / product().oldPrice! * 100).toFixed(0) }}%
+      </span>
+    }
+  </div>
+
   <!-- Favorite Button -->
   <button class="absolute top-3 right-3 z-10 w-8 h-8 bg-white rounded-full flex items-center justify-center hover:bg-gray-50 transition-colors shadow-sm">
     <svg class="w-4 h-4 text-gray-400 hover:text-red-500 transition-colors" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -45,6 +60,11 @@
 
     <!-- Price -->
     <div class="mb-3">
+      @if (product().oldPrice && product().oldPrice! > product().price) {
+        <div class="text-xs text-gray-500 line-through mb-0.5">
+          R$ {{ product().oldPrice!.toLocaleString('pt-BR', { minimumFractionDigits: 2, maximumFractionDigits: 2 }) }}
+        </div>
+      }
       <div class="text-lg font-bold text-gray-900">
         R$ {{ product().price.toLocaleString('pt-BR', { minimumFractionDigits: 2, maximumFractionDigits: 2 }) }}
       </div>
@@ -53,7 +73,7 @@
     <!-- Action Button -->
     <button
       (click)="onAddToCart()"
-      class="w-full h-9 text-center bg-white text-gray-900 rounded hover:bg-gray-900 hover:text-white transition-all duration-300 font-medium text-sm border-2 border-gray-900 cursor-pointer"
+      class="w-full h-10 text-center bg-emerald-600 text-white rounded-full hover:bg-emerald-700 active:bg-emerald-800 transition-all duration-200 font-semibold text-sm shadow-sm hover:shadow-md cursor-pointer"
     >
       Comprar
     </button>

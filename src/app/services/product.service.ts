@@ -218,9 +218,11 @@ export class ProductService {
       description: p.description,
       shortDescription: p.short_description,
       price: Number(p.price),
+      oldPrice: p.old_price ? Number(p.old_price) : undefined,
       image: p.image,
       images: [p.image],
       category: p.category,
+      storeType: p.store_type || 'outros',
       store: 'Loja Parceira',
       affiliateLink: p.affiliate_link,
       features: [],
@@ -259,9 +261,11 @@ export class ProductService {
       description: p.description,
       shortDescription: p.short_description,
       price: Number(p.price),
+      oldPrice: p.old_price ? Number(p.old_price) : undefined,
       image: p.image,
       images: [p.image],
       category: p.category,
+      storeType: p.store_type || 'outros',
       store: 'Loja Parceira',
       affiliateLink: p.affiliate_link,
       features: [],
@@ -305,7 +309,9 @@ export class ProductService {
         short_description: product.shortDescription,
         description: product.description,
         price: product.price,
+        old_price: product.oldPrice || null,
         category: product.category,
+        store_type: product.storeType || 'outros',
         image: product.image,
         rating: 0
       })
@@ -323,9 +329,11 @@ export class ProductService {
       description: data.description,
       shortDescription: data.short_description,
       price: Number(data.price),
+      oldPrice: data.old_price ? Number(data.old_price) : undefined,
       image: data.image,
       images: [data.image],
       category: data.category,
+      storeType: data.store_type,
       store: 'Loja Parceira',
       affiliateLink: '',
       features: [],
@@ -340,7 +348,9 @@ export class ProductService {
     if (product.shortDescription) updateData['short_description'] = product.shortDescription;
     if (product.description) updateData['description'] = product.description;
     if (product.price) updateData['price'] = product.price;
+    if (product.oldPrice !== undefined) updateData['old_price'] = product.oldPrice || null;
     if (product.category) updateData['category'] = product.category;
+    if (product.storeType) updateData['store_type'] = product.storeType;
     if (product.image) updateData['image'] = product.image;
     
     updateData['updated_at'] = new Date().toISOString();
@@ -364,9 +374,11 @@ export class ProductService {
       description: p.description,
       shortDescription: p.short_description,
       price: Number(p.price),
+      oldPrice: p.old_price ? Number(p.old_price) : undefined,
       image: p.image,
       images: [p.image],
       category: p.category,
+      storeType: p.store_type || 'outros',
       store: 'Loja Parceira',
       affiliateLink: '',
       features: [],
