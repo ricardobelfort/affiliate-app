@@ -22,6 +22,10 @@ export class AdminProductListPage implements OnInit {
   deleting = signal<string | null>(null);
   userName = signal<string>('');
   greeting = signal<string>('');
+  showDeleteDialog = signal(false);
+  productToDelete = signal<{ id: string; name: string } | null>(null);
+  showSuccessMessage = signal(false);
+  successMessage = signal('');
 
   async ngOnInit() {
     await this.loadUserInfo();
@@ -67,24 +71,40 @@ export class AdminProductListPage implements OnInit {
     }
   }
 
-  async deleteProduct(id: string) {
+  openDeleteDialog(id: string) {
     const product = this.products().find(p => p.id === id);
-    const productName = product?.name || 'este produto';
-    
-    if (!confirm(`⚠️ Tem certeza que deseja deletar "${productName}"?\n\nEsta ação não pode ser desfeita.`)) {
-      return;
+    if (product) {
+      this.productToDelete.set({ id, name: product.name });
+      this.showDeleteDialog.set(true);
     }
+  }
 
-    this.deleting.set(id);
+  closeDeleteDialog() {
+    this.showDeleteDialog.set(false);
+    this.productToDelete.set(null);
+  }
+
+  async confirmDelete() {
+    const product = this.productToDelete();
+    if (!product) return;
+
+    this.deleting.set(product.id);
+    this.showDeleteDialog.set(false);
+    
     try {
-      await this.productService.deleteProduct(id);
-      alert('✓ Produto deletado com sucesso!');
+      await this.productService.deleteProduct(product.id);
+      this.successMessage.set('Produto deletado com sucesso!');
+      this.showSuccessMessage.set(true);
+      setTimeout(() => this.showSuccessMessage.set(false), 3000);
       await this.loadProducts();
     } catch (error) {
       console.error('Error deleting product:', error);
-      alert('✗ Erro ao deletar produto. Tente novamente.');
+      this.successMessage.set('Erro ao deletar produto. Tente novamente.');
+      this.showSuccessMessage.set(true);
+      setTimeout(() => this.showSuccessMessage.set(false), 3000);
     } finally {
       this.deleting.set(null);
+      this.productToDelete.set(null);
     }
   }
 

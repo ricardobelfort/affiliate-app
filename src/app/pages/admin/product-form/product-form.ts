@@ -24,6 +24,8 @@ export class AdminProductFormPage implements OnInit {
   categories = signal<Category[]>([]);
   productId: string | null = null;
   isEditMode = false;
+  showSuccessMessage = signal(false);
+  successMessage = signal('');
 
   ngOnInit() {
     this.initForm();
@@ -93,17 +95,23 @@ export class AdminProductFormPage implements OnInit {
       
       if (this.isEditMode && this.productId) {
         await this.productService.updateProduct(this.productId, formValue);
-        alert('✓ Produto atualizado com sucesso!');
+        this.successMessage.set('Produto atualizado com sucesso!');
       } else {
         await this.productService.addProduct(formValue);
-        alert('✓ Produto criado com sucesso!');
+        this.successMessage.set('Produto criado com sucesso!');
       }
 
-      this.router.navigate(['/admin/products']);
+      this.showSuccessMessage.set(true);
+      setTimeout(() => {
+        this.showSuccessMessage.set(false);
+        this.router.navigate(['/admin/products']);
+      }, 1500);
     } catch (error) {
       console.error('Error saving product:', error);
       const action = this.isEditMode ? 'atualizar' : 'criar';
-      alert(`✗ Erro ao ${action} produto. Tente novamente.`);
+      this.successMessage.set(`Erro ao ${action} produto. Tente novamente.`);
+      this.showSuccessMessage.set(true);
+      setTimeout(() => this.showSuccessMessage.set(false), 3000);
     } finally {
       this.saving.set(false);
     }
