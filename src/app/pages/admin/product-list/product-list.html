@@ -1,5 +1,71 @@
 <div class="space-y-6">
-  <!-- Header -->
+  <!-- Header with Greeting -->
+  <div>
+    <h1 class="text-2xl font-semibold text-gray-900">👋 {{ greeting() }}, {{ userName() }}!</h1>
+  </div>
+
+  <!-- Stats Overview -->
+  <div>
+    <div class="flex items-center justify-between mb-4">
+      <h2 class="text-base font-medium text-gray-700">Visão Geral</h2>
+      <div class="relative">
+        <select class="appearance-none h-9 px-4 pr-10 bg-white border border-gray-200 rounded text-sm text-gray-700 cursor-pointer focus:outline-none focus:ring-2 focus:ring-emerald-500">
+          <option>Última semana</option>
+          <option>Último mês</option>
+          <option>Último ano</option>
+        </select>
+        <div class="pointer-events-none absolute inset-y-0 right-0 flex items-center pr-3 text-gray-400">
+          <svg class="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
+          </svg>
+        </div>
+      </div>
+    </div>
+
+    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 mb-8">
+      <!-- Total Clicks -->
+      <div class="bg-white p-6 rounded-lg border border-gray-200">
+        <p class="text-sm text-gray-600 mb-1">Total de Cliques</p>
+        <p class="text-3xl font-bold text-gray-900 mb-2">12.456</p>
+        <p class="text-sm">
+          <span class="text-emerald-600 font-medium">+8,3%</span>
+          <span class="text-gray-500 ml-1">da última semana</span>
+        </p>
+      </div>
+
+      <!-- Estimated Commission -->
+      <div class="bg-white p-6 rounded-lg border border-gray-200">
+        <p class="text-sm text-gray-600 mb-1">Comissão Estimada</p>
+        <p class="text-3xl font-bold text-gray-900 mb-2">R$ 3.245</p>
+        <p class="text-sm">
+          <span class="text-emerald-600 font-medium">+12,7%</span>
+          <span class="text-gray-500 ml-1">da última semana</span>
+        </p>
+      </div>
+
+      <!-- Active Products -->
+      <div class="bg-white p-6 rounded-lg border border-gray-200">
+        <p class="text-sm text-gray-600 mb-1">Produtos Ativos</p>
+        <p class="text-3xl font-bold text-gray-900 mb-2">{{ products().length }}</p>
+        <p class="text-sm">
+          <span class="text-emerald-600 font-medium">+2</span>
+          <span class="text-gray-500 ml-1">este mês</span>
+        </p>
+      </div>
+
+      <!-- Conversion Rate -->
+      <div class="bg-white p-6 rounded-lg border border-gray-200">
+        <p class="text-sm text-gray-600 mb-1">Taxa de Conversão</p>
+        <p class="text-3xl font-bold text-gray-900 mb-2">3,8%</p>
+        <p class="text-sm">
+          <span class="text-emerald-600 font-medium">+0,5%</span>
+          <span class="text-gray-500 ml-1">da última semana</span>
+        </p>
+      </div>
+    </div>
+  </div>
+
+  <!-- Products Section -->
   <div class="flex items-center justify-between">
     <div>
       <h1 class="text-2xl font-bold text-gray-900">Produtos</h1>

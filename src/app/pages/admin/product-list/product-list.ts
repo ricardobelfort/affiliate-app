@@ -3,6 +3,7 @@ import { Router, RouterLink } from '@angular/router';
 import { CommonModule } from '@angular/common';
 import { ProductService } from '../../../services/product.service';
 import { Product } from '../../../models/product.model';
+import { SupabaseService } from '../../../services/supabase.service';
 
 @Component({
   selector: 'app-admin-product-list',
@@ -13,14 +14,38 @@ import { Product } from '../../../models/product.model';
 })
 export class AdminProductListPage implements OnInit {
   private productService = inject(ProductService);
+  private supabase = inject(SupabaseService);
   private router = inject(Router);
 
   products = signal<Product[]>([]);
   loading = signal(true);
   deleting = signal<string | null>(null);
+  userName = signal<string>('');
+  greeting = signal<string>('');
 
   async ngOnInit() {
+    await this.loadUserInfo();
+    this.setGreeting();
     await this.loadProducts();
+  }
+
+  async loadUserInfo() {
+    const { data } = await this.supabase.getSession();
+    if (data.session?.user) {
+      const name = data.session.user.email?.split('@')[0] || 'Admin';
+      this.userName.set(name.charAt(0).toUpperCase() + name.slice(1));
+    }
+  }
+
+  setGreeting() {
+    const hour = new Date().getHours();
+    if (hour >= 5 && hour < 12) {
+      this.greeting.set('Bom dia');
+    } else if (hour >= 12 && hour < 18) {
+      this.greeting.set('Boa tarde');
+    } else {
+      this.greeting.set('Boa noite');
+    }
   }
 
   async loadProducts() {
