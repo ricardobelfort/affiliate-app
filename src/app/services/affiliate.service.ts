@@ -248,13 +248,14 @@ export class AffiliateService {
   // Obter estatísticas de todos os usuários (Team Stats)
   async getTeamStats(): Promise<TeamMemberStats[]> {
     const { data, error } = await this.supabase.client
-      .from('team_stats')
-      .select('*')
-      .order('total_clicks', { ascending: false });
+      .rpc('get_team_stats') as { data: any[] | null, error: any };
 
     if (error) throw error;
 
-    return (data || []).map((row: any) => ({
+    // Sort by total_clicks descending
+    const sortedData = (data || []).sort((a: any, b: any) => (b.total_clicks || 0) - (a.total_clicks || 0));
+
+    return sortedData.map((row: any) => ({
       userId: row.user_id,
       email: row.email,
       displayName: row.display_name || row.email.split('@')[0],
