@@ -29,6 +29,10 @@ export class AdminLayout implements OnInit {
     }
   }
 
+  closeSidebar() {
+    this.sidebarOpen.set(false);
+  }
+
   async logout() {
     await this.supabase.signOut();
     this.router.navigate(['/admin/login']);
