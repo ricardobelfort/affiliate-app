@@ -1,11 +1,10 @@
 import { Component, input, ChangeDetectionStrategy } from '@angular/core';
-import { RouterLink } from '@angular/router';
 import { CommonModule } from '@angular/common';
 import { Product } from '../../models/product.model';
 
 @Component({
   selector: 'app-product-card',
-  imports: [CommonModule, RouterLink],
+  imports: [CommonModule],
   templateUrl: './product-card.html',
   styleUrl: './product-card.css',
   changeDetection: ChangeDetectionStrategy.OnPush,
@@ -37,5 +36,9 @@ export class ProductCard {
       default:
         return '';
     }
+  }
+
+  onAddToCart() {
+    window.open(this.product().affiliateLink, '_blank', 'noopener,noreferrer');
   }
 }

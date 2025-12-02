@@ -44,6 +44,12 @@ export class ProductFiltersComponent implements OnInit {
     this.emitFilters();
   }
 
+  onPriceRangeChange(min: number, max: number) {
+    this.minPrice.set(min);
+    this.maxPrice.set(max);
+    this.emitFilters();
+  }
+
   clearFilters() {
     this.selectedCategory.set('');
     this.selectedStore.set('');
