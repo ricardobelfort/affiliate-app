@@ -10,15 +10,27 @@
 
       <!-- Search Bar - Desktop -->
       <div class="hidden md:flex flex-1 max-w-lg mx-8">
-        <form (ngSubmit)="onSearch()" class="w-full flex">
+        <form (ngSubmit)="onSearch()" class="w-full flex relative">
           <input
-            type="search"
+            type="text"
             [(ngModel)]="searchQuery"
             name="search"
             placeholder="Buscar produtos..."
             aria-label="Buscar produtos"
             class="flex-1 px-4 py-2 border border-gray-300 rounded-l-lg focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:border-transparent"
           />
+          @if (searchQuery()) {
+            <button
+              type="button"
+              (click)="clearSearch()"
+              class="absolute right-16 top-1/2 -translate-y-1/2 p-1 text-gray-400 hover:text-gray-600 transition-colors"
+              aria-label="Limpar busca"
+            >
+              <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+              </svg>
+            </button>
+          }
           <button
             type="submit"
             aria-label="Buscar"
@@ -68,15 +80,27 @@
 
     <!-- Mobile Search -->
     <div class="md:hidden pb-4">
-      <form (ngSubmit)="onSearch()" class="flex">
+      <form (ngSubmit)="onSearch()" class="flex relative">
         <input
-          type="search"
+          type="text"
           [(ngModel)]="searchQuery"
           name="search-mobile"
           placeholder="Buscar produtos..."
           aria-label="Buscar produtos"
           class="flex-1 px-4 py-2 border border-gray-300 rounded-l-lg focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:border-transparent"
         />
+        @if (searchQuery()) {
+          <button
+            type="button"
+            (click)="clearSearch()"
+            class="absolute right-16 top-1/2 -translate-y-1/2 p-1 text-gray-400 hover:text-gray-600 transition-colors"
+            aria-label="Limpar busca"
+          >
+            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+            </svg>
+          </button>
+        }
         <button
           type="submit"
           aria-label="Buscar"

@@ -44,6 +44,8 @@ export class ProductListPage implements OnInit {
       this.currentPage.set(page);
       if (search) {
         this.currentFilters.update(f => ({ ...f, search }));
+      } else {
+        this.currentFilters.update(f => ({ ...f, search: undefined }));
       }
       
       this.loadProducts();
