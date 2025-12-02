@@ -160,7 +160,7 @@ export class AdminProductFormPage implements OnInit {
       const productData = await this.amazonService.getProductData(asin);
       
       if (!productData) {
-        this.importError.set('Não foi possível buscar os dados do produto. Verifique suas credenciais da Amazon PA-API.');
+        this.importError.set('⚠️ Sua conta Amazon Associates precisa ser aprovada para usar a PA-API. Enquanto isso, você pode preencher os campos manualmente. Acesse: https://affiliate-program.amazon.com → Ferramentas → Product Advertising API');
         this.importing.set(false);
         return;
       }

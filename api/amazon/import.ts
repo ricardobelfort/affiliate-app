@@ -1,4 +1,5 @@
 import type { VercelRequest, VercelResponse } from '@vercel/node';
+import { createHmac, createHash } from 'crypto';
 
 interface PAAPIResponse {
   ItemsResult?: {
@@ -153,7 +154,7 @@ async function generateHeaders(
   secretKey: string
 ): Promise<Record<string, string>> {
   const payloadString = JSON.stringify(payload);
-  const payloadHash = await sha256(payloadString);
+  const payloadHash = sha256(payloadString);
   
   const host = 'webservices.amazon.com';
   const target = 'com.amazon.paapi5.v1.ProductAdvertisingAPIv1.GetItems';
@@ -182,7 +183,7 @@ async function generateHeaders(
     'AWS4-HMAC-SHA256',
     formatTimestamp(timestamp),
     credentialScope,
-    await sha256(canonicalRequest)
+    sha256(canonicalRequest)
   ].join('\n');
 
   const signature = await calculateSignature(timestamp, stringToSign, secretKey);
@@ -209,46 +210,15 @@ function getCredentialScope(timestamp: string): string {
 
 async function calculateSignature(timestamp: string, stringToSign: string, secretKey: string): Promise<string> {
   const date = timestamp.substring(0, 10).replace(/-/g, '');
-  const kDate = await hmacSha256(`AWS4${secretKey}`, date);
-  const kRegion = await hmacSha256(kDate, 'us-east-1');
-  const kService = await hmacSha256(kRegion, 'ProductAdvertisingAPI');
-  const kSigning = await hmacSha256(kService, 'aws4_request');
-  const signature = await hmacSha256(kSigning, stringToSign);
-  
-  return toHex(signature);
-}
-
-async function sha256(message: string): Promise<string> {
-  const encoder = new TextEncoder();
-  const data = encoder.encode(message);
-  const hashBuffer = await crypto.subtle.digest('SHA-256', data);
-  return toHex(hashBuffer);
-}
-
-async function hmacSha256(key: ArrayBuffer | string, message: string): Promise<ArrayBuffer> {
-  const encoder = new TextEncoder();
-  const keyData = typeof key === 'string' ? encoder.encode(key) : key;
-  
-  const cryptoKey = await crypto.subtle.importKey(
-    'raw',
-    keyData,
-    { name: 'HMAC', hash: 'SHA-256' },
-    false,
-    ['sign']
-  );
-  
-  const signature = await crypto.subtle.sign(
-    'HMAC',
-    cryptoKey,
-    encoder.encode(message)
-  );
+  const kDate = createHmac('sha256', `AWS4${secretKey}`).update(date).digest();
+  const kRegion = createHmac('sha256', kDate).update('us-east-1').digest();
+  const kService = createHmac('sha256', kRegion).update('ProductAdvertisingAPI').digest();
+  const kSigning = createHmac('sha256', kService).update('aws4_request').digest();
+  const signature = createHmac('sha256', kSigning).update(stringToSign).digest('hex');
   
   return signature;
 }
 
-function toHex(buffer: ArrayBuffer): string {
-  const byteArray = new Uint8Array(buffer);
-  return Array.from(byteArray)
-    .map(b => b.toString(16).padStart(2, '0'))
-    .join('');
+function sha256(message: string): string {
+  return createHash('sha256').update(message).digest('hex');
 }
