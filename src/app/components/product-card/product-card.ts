@@ -1,6 +1,7 @@
-import { Component, input, ChangeDetectionStrategy } from '@angular/core';
+import { Component, input, inject, ChangeDetectionStrategy } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { Product } from '../../models/product.model';
+import { AffiliateService } from '../../services/affiliate.service';
 
 @Component({
   selector: 'app-product-card',
@@ -10,6 +11,7 @@ import { Product } from '../../models/product.model';
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class ProductCard {
+  private affiliateService = inject(AffiliateService);
   product = input.required<Product>();
 
   getBadgeClass(badge?: string): string {
@@ -38,7 +40,31 @@ export class ProductCard {
     }
   }
 
-  onAddToCart() {
-    window.open(this.product().affiliateLink, '_blank', 'noopener,noreferrer');
+  async onAddToCart() {
+    try {
+      // Buscar link usando Round-Robin (distribuição justa entre os 3 usuários)
+      const affiliateLink = await this.affiliateService.getAffiliateLinkRoundRobin(this.product().id);
+      
+      if (affiliateLink) {
+        // Registrar clique para estatísticas
+        await this.affiliateService.trackClick(
+          this.product().id,
+          affiliateLink.id,
+          undefined, // IP será capturado no backend se necessário
+          navigator.userAgent
+        );
+        
+        // Redirecionar para Amazon com link do usuário selecionado
+        window.open(affiliateLink.affiliateLink, '_blank', 'noopener,noreferrer');
+      } else {
+        // Fallback: usar link padrão do produto se nenhum usuário tiver link cadastrado
+        console.warn('Nenhum link afiliado encontrado, usando link padrão');
+        window.open(this.product().affiliateLink, '_blank', 'noopener,noreferrer');
+      }
+    } catch (error) {
+      console.error('Erro ao buscar link afiliado:', error);
+      // Fallback em caso de erro
+      window.open(this.product().affiliateLink, '_blank', 'noopener,noreferrer');
+    }
   }
 }

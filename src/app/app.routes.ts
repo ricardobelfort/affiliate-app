@@ -5,6 +5,7 @@ import { LoginPage } from './pages/admin/login/login';
 import { AdminLayout } from './components/admin-layout/admin-layout';
 import { AdminProductListPage } from './pages/admin/product-list/product-list';
 import { AdminProductFormPage } from './pages/admin/product-form/product-form';
+import { AffiliateLinksPage } from './pages/admin/affiliate-links/affiliate-links';
 import { authGuard } from './guards/auth.guard';
 
 export const routes: Routes = [
@@ -62,6 +63,11 @@ export const routes: Routes = [
         path: 'products/:id/edit',
         component: AdminProductFormPage,
         title: 'Editar Produto | Admin'
+      },
+      {
+        path: 'affiliate-links',
+        component: AffiliateLinksPage,
+        title: 'Meus Links Afiliados | Admin'
       }
     ]
   },
