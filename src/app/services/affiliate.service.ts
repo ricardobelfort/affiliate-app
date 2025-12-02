@@ -67,14 +67,20 @@ export class AffiliateService {
   // Obter link afiliado específico do usuário para um produto
   getUserLinkForProduct(productId: string): Observable<UserAffiliateLink | null> {
     return from(
-      this.supabase.client
-        .from('user_affiliate_links')
-        .select('*')
-        .eq('product_id', productId)
-        .single()
+      (async () => {
+        const { data: session } = await this.supabase.getSession();
+        if (!session.session?.user) throw new Error('User not authenticated');
+
+        return this.supabase.client
+          .from('user_affiliate_links')
+          .select('*')
+          .eq('product_id', productId)
+          .eq('user_id', session.session.user.id)
+          .maybeSingle();
+      })()
     ).pipe(
       map(({ data, error }) => {
-        if (error && error.code !== 'PGRST116') throw error;
+        if (error) throw error;
         return data ? this.mapFromDb(data) : null;
       })
     );
