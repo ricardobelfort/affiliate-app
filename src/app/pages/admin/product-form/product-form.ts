@@ -124,9 +124,11 @@ export class AdminProductFormPage implements OnInit {
       const formValue = this.form.value;
       const affiliateLink = formValue.affiliateLink;
       
-      // Remover affiliateLink do formValue pois não vamos mais salvar na tabela products
-      const productData = { ...formValue };
-      delete productData.affiliateLink;
+      // Preparar dados do produto - affiliate_link não é mais usado mas precisa de valor vazio
+      const productData = { 
+        ...formValue,
+        affiliateLink: '' // Coluna legacy, agora usa user_affiliate_links
+      };
       
       let productId: string;
       

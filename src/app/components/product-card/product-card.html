@@ -22,6 +22,16 @@
         -{{ ((product().oldPrice! - product().price) / product().oldPrice! * 100).toFixed(0) }}%
       </span>
     }
+    
+    <!-- Out of Stock Badge -->
+    @if (isOutOfStock()) {
+      <div class="inline-flex items-center px-2.5 py-1 rounded bg-gray-800 text-white text-xs font-bold shadow-md">
+        <svg class="w-3.5 h-3.5 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+        </svg>
+        Indisponível
+      </div>
+    }
   </div>
 
   <!-- Favorite Button -->
@@ -104,9 +114,12 @@
     <!-- Action Button -->
     <button
       (click)="onAddToCart()"
-      class="w-full h-10 text-center bg-emerald-600 text-white rounded-full hover:bg-emerald-700 active:bg-emerald-800 transition-all duration-200 font-semibold text-sm shadow-sm hover:shadow-md cursor-pointer"
+      [disabled]="isOutOfStock()"
+      [class]="isOutOfStock() 
+        ? 'w-full h-10 text-center bg-gray-400 text-white rounded-full font-semibold text-sm cursor-not-allowed opacity-60'
+        : 'w-full h-10 text-center bg-emerald-600 text-white rounded-full hover:bg-emerald-700 active:bg-emerald-800 transition-all duration-200 font-semibold text-sm shadow-sm hover:shadow-md cursor-pointer'"
     >
-      Comprar
+      {{ isOutOfStock() ? 'Indisponível' : 'Comprar' }}
     </button>
   </div>
 </div>

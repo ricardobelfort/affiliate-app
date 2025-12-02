@@ -68,4 +68,13 @@ export class ProductCard {
       window.open(this.product().affiliateLink, '_blank', 'noopener,noreferrer');
     }
   }
+
+  isOutOfStock(): boolean {
+    const availability = this.product().availability?.toLowerCase() || '';
+    // Amazon availability states that indicate out of stock
+    return availability.includes('out of stock') || 
+           availability.includes('unavailable') || 
+           availability.includes('currently unavailable') ||
+           availability.includes('temporarily out of stock');
+  }
 }
