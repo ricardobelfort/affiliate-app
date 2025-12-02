@@ -57,4 +57,33 @@ export class AmazonService {
       return null;
     }
   }
+
+  /**
+   * Atualiza dados de múltiplos produtos da Amazon
+   * Útil para atualização em lote via CRON
+   */
+  async updateProductsData(asins: string[]): Promise<Map<string, AmazonProductData | null>> {
+    const results = new Map<string, AmazonProductData | null>();
+    
+    // Processar em lotes de 10 para não sobrecarregar a API
+    const batchSize = 10;
+    for (let i = 0; i < asins.length; i += batchSize) {
+      const batch = asins.slice(i, i + batchSize);
+      const promises = batch.map(asin => 
+        this.getProductData(asin).then(data => ({ asin, data }))
+      );
+      
+      const batchResults = await Promise.all(promises);
+      batchResults.forEach(({ asin, data }) => {
+        results.set(asin, data);
+      });
+      
+      // Pequeno delay entre lotes para respeitar rate limits
+      if (i + batchSize < asins.length) {
+        await new Promise(resolve => setTimeout(resolve, 1000));
+      }
+    }
+    
+    return results;
+  }
 }

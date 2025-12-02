@@ -4,6 +4,7 @@ import { Observable, of, delay, from, map as rxMap } from 'rxjs';
 import { map } from 'rxjs/operators';
 import { Product, Category, ProductFilters, PaginatedProducts } from '../models/product.model';
 import { SupabaseService } from './supabase.service';
+import { AmazonService } from './amazon.service';
 
 @Injectable({
   providedIn: 'root'
@@ -11,6 +12,7 @@ import { SupabaseService } from './supabase.service';
 export class ProductService {
   private http = inject(HttpClient);
   private supabase = inject(SupabaseService);
+  private amazonService = inject(AmazonService);
 
   // Mock data - substituir por chamadas HTTP reais no futuro
   private mockProducts: Product[] = [
@@ -227,6 +229,13 @@ export class ProductService {
       affiliateLink: p.affiliate_link,
       features: [],
       createdAt: new Date(p.created_at),
+      asin: p.asin,
+      brand: p.brand,
+      rating: p.rating ? Number(p.rating) : undefined,
+      reviewCount: p.review_count || 0,
+      primeEligible: p.prime_eligible || false,
+      availability: p.availability,
+      lastUpdatedAt: p.last_updated_at ? new Date(p.last_updated_at) : undefined,
     }));
 
     return {
@@ -270,6 +279,13 @@ export class ProductService {
       affiliateLink: p.affiliate_link,
       features: [],
       createdAt: new Date(p.created_at),
+      asin: p.asin,
+      brand: p.brand,
+      rating: p.rating ? Number(p.rating) : undefined,
+      reviewCount: p.review_count || 0,
+      primeEligible: p.prime_eligible || false,
+      availability: p.availability,
+      lastUpdatedAt: p.last_updated_at ? new Date(p.last_updated_at) : undefined,
     };
   }
 
@@ -313,7 +329,12 @@ export class ProductService {
         category: product.category,
         store_type: product.storeType || 'outros',
         image: product.image,
-        rating: 0
+        asin: product.asin || null,
+        brand: product.brand || null,
+        rating: product.rating || 0,
+        review_count: product.reviewCount || 0,
+        prime_eligible: product.primeEligible || false,
+        availability: product.availability || null
       })
       .select()
       .single();
@@ -338,6 +359,13 @@ export class ProductService {
       affiliateLink: '',
       features: [],
       createdAt: new Date(data.created_at),
+      asin: data.asin,
+      brand: data.brand,
+      rating: data.rating ? Number(data.rating) : undefined,
+      reviewCount: data.review_count || 0,
+      primeEligible: data.prime_eligible || false,
+      availability: data.availability,
+      lastUpdatedAt: data.last_updated_at ? new Date(data.last_updated_at) : undefined,
     };
   }
 
@@ -352,8 +380,15 @@ export class ProductService {
     if (product.category) updateData['category'] = product.category;
     if (product.storeType) updateData['store_type'] = product.storeType;
     if (product.image) updateData['image'] = product.image;
+    if (product.asin !== undefined) updateData['asin'] = product.asin;
+    if (product.brand) updateData['brand'] = product.brand;
+    if (product.rating !== undefined) updateData['rating'] = product.rating;
+    if (product.reviewCount !== undefined) updateData['review_count'] = product.reviewCount;
+    if (product.primeEligible !== undefined) updateData['prime_eligible'] = product.primeEligible;
+    if (product.availability !== undefined) updateData['availability'] = product.availability;
     
     updateData['updated_at'] = new Date().toISOString();
+    updateData['last_updated_at'] = new Date().toISOString();
 
     const { data, error } = await (this.supabase.client as any)
       .from('products')
@@ -383,6 +418,13 @@ export class ProductService {
       affiliateLink: '',
       features: [],
       createdAt: new Date(p.created_at),
+      asin: p.asin,
+      brand: p.brand,
+      rating: p.rating ? Number(p.rating) : undefined,
+      reviewCount: p.review_count || 0,
+      primeEligible: p.prime_eligible || false,
+      availability: p.availability,
+      lastUpdatedAt: p.last_updated_at ? new Date(p.last_updated_at) : undefined,
     };
   }
 
@@ -394,6 +436,70 @@ export class ProductService {
 
     if (error) {
       console.error('Error deleting product:', error);
+      throw error;
+    }
+  }
+
+  /**
+   * Atualiza produtos da Amazon com dados mais recentes
+   * Pode ser chamado manualmente ou via CRON job
+   */
+  async updateAmazonProducts(hoursOld: number = 24): Promise<{ updated: number; failed: number }> {
+    try {
+      // Buscar produtos Amazon que não foram atualizados recentemente
+      const cutoffDate = new Date();
+      cutoffDate.setHours(cutoffDate.getHours() - hoursOld);
+
+      const { data: products, error } = await this.supabase.client
+        .from('products')
+        .select('id, asin')
+        .eq('store_type', 'amazon')
+        .not('asin', 'is', null)
+        .or(`last_updated_at.is.null,last_updated_at.lt.${cutoffDate.toISOString()}`);
+
+      if (error || !products || products.length === 0) {
+        console.log('No products to update');
+        return { updated: 0, failed: 0 };
+      }
+
+      console.log(`Updating ${products.length} Amazon products...`);
+
+      const asins = (products as any[]).map(p => p.asin);
+      const amazonData = await this.amazonService.updateProductsData(asins);
+
+      let updated = 0;
+      let failed = 0;
+
+      for (const product of (products as any[])) {
+        const data = amazonData.get(product.asin);
+        
+        if (data) {
+          try {
+            await this.updateProduct(product.id, {
+              price: data.price,
+              oldPrice: data.oldPrice,
+              rating: data.rating,
+              reviewCount: data.reviewCount,
+              primeEligible: data.primeEligible,
+              availability: data.availability,
+              brand: data.brand,
+              image: data.imageUrl || undefined,
+            });
+            updated++;
+          } catch (err) {
+            console.error(`Failed to update product ${product.id}:`, err);
+            failed++;
+          }
+        } else {
+          failed++;
+        }
+      }
+
+      console.log(`Update complete: ${updated} updated, ${failed} failed`);
+      return { updated, failed };
+
+    } catch (error) {
+      console.error('Error updating Amazon products:', error);
       throw error;
     }
   }

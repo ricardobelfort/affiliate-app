@@ -36,6 +36,7 @@ export class AdminProductListPage implements OnInit {
   currentPage = signal(1);
   pageSize = signal(10);
   totalProducts = signal(0);
+  updatingAmazon = signal(false);
   
   // Stats dinâmicos
   totalClicks = signal(0);
@@ -98,6 +99,36 @@ export class AdminProductListPage implements OnInit {
       this.conversionRate.set(stats.conversionRate);
     } catch (error) {
       console.error('Error loading stats:', error);
+    }
+  }
+
+  async updateAmazonProducts() {
+    this.updatingAmazon.set(true);
+    try {
+      const result = await this.productService.updateAmazonProducts(24);
+      
+      if (result.updated > 0) {
+        this.successMessage.set(`${result.updated} produto(s) atualizado(s) com sucesso!`);
+        this.showSuccessMessage.set(true);
+        setTimeout(() => this.showSuccessMessage.set(false), 3000);
+        // Recarregar produtos para mostrar dados atualizados
+        await this.loadProducts();
+      } else if (result.failed > 0) {
+        this.successMessage.set(`Falha ao atualizar ${result.failed} produto(s)`);
+        this.showSuccessMessage.set(true);
+        setTimeout(() => this.showSuccessMessage.set(false), 3000);
+      } else {
+        this.successMessage.set('Nenhum produto para atualizar');
+        this.showSuccessMessage.set(true);
+        setTimeout(() => this.showSuccessMessage.set(false), 3000);
+      }
+    } catch (error) {
+      console.error('Error updating Amazon products:', error);
+      this.successMessage.set('Erro ao atualizar produtos');
+      this.showSuccessMessage.set(true);
+      setTimeout(() => this.showSuccessMessage.set(false), 3000);
+    } finally {
+      this.updatingAmazon.set(false);
     }
   }
 

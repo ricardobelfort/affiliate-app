@@ -2,10 +2,14 @@ export interface AmazonProductData {
   asin: string;
   title: string;
   price?: number;
+  oldPrice?: number;
   imageUrl?: string;
   rating?: number;
   reviewCount?: number;
   features?: string[];
+  brand?: string;
+  primeEligible?: boolean;
+  availability?: string;
 }
 
 export interface PAAPIResponse {

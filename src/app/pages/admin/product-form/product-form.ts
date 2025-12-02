@@ -63,6 +63,7 @@ export class AdminProductFormPage implements OnInit {
       oldPrice: [''],
       category: ['', Validators.required],
       storeType: ['', Validators.required],
+      asin: ['', [Validators.pattern(/^[A-Z0-9]{10}$/)]],
       image: ['', [Validators.required, Validators.pattern(/^https?:\/\/.+/)]],
       affiliateLink: ['', [Validators.required, Validators.pattern(/^https?:\/\/.+/)]]
     });
@@ -97,6 +98,7 @@ export class AdminProductFormPage implements OnInit {
             oldPrice: product.oldPrice || '',
             category: product.category,
             storeType: product.storeType || 'outros',
+            asin: product.asin || '',
             image: product.image,
             affiliateLink: product.affiliateLink
           });
@@ -211,6 +213,8 @@ export class AdminProductFormPage implements OnInit {
         price: productData.price || '',
         image: productData.imageUrl || '',
         affiliateLink: url,
+        storeType: 'amazon',
+        asin: asin,
         shortDescription: productData.title?.substring(0, 100) || '',
         description: productData.features?.join('\n• ') || productData.title || ''
       });

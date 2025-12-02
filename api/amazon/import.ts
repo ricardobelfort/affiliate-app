@@ -110,7 +110,7 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
       });
     }
 
-    const data: PAAPIResponse = await response.json();
+    const data = await response.json() as PAAPIResponse;
 
     if (data.Errors && data.Errors.length > 0) {
       console.error('PA-API Errors:', data.Errors);

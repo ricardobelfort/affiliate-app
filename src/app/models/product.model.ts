@@ -17,6 +17,14 @@ export interface Product {
   features?: string[];
   createdAt: Date;
   discount?: number;
+  // Amazon-specific fields
+  asin?: string;
+  brand?: string;
+  rating?: number;
+  reviewCount?: number;
+  primeEligible?: boolean;
+  availability?: string;
+  lastUpdatedAt?: Date;
 }
 
 export interface Category {
