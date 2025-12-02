@@ -35,6 +35,8 @@
               <img
                 [src]="selectedImage()"
                 [alt]="product()!.name"
+                width="600"
+                height="600"
                 class="w-full h-full object-cover"
               />
             </div>
@@ -52,6 +54,8 @@
                     <img
                       [src]="image"
                       [alt]="product()!.name + ' - Imagem ' + ($index + 1)"
+                      width="150"
+                      height="150"
                       class="w-full h-full object-cover"
                     />
                   </button>
