@@ -21,3 +21,24 @@
     overflow: hidden;
   }
 }
+
+/* Placeholder styling */
+::placeholder {
+  @apply text-gray-400;
+  opacity: 1;
+}
+
+::-webkit-input-placeholder {
+  @apply text-gray-400;
+  opacity: 1;
+}
+
+::-moz-placeholder {
+  @apply text-gray-400;
+  opacity: 1;
+}
+
+:-ms-input-placeholder {
+  @apply text-gray-400;
+  opacity: 1;
+}
