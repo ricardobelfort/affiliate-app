@@ -23,9 +23,9 @@ export class AdminLayout implements OnInit {
     const { data } = await this.supabase.getSession();
     if (data.session?.user) {
       this.userEmail.set(data.session.user.email || '');
-      // Extract name from email (before @)
-      const name = data.session.user.email?.split('@')[0] || 'Admin';
-      this.userName.set(name.charAt(0).toUpperCase() + name.slice(1));
+      const displayName = data.session.user.user_metadata?.['display_name'];
+      const name = displayName || data.session.user.email?.split('@')[0] || 'Admin';
+      this.userName.set(name);
     }
   }
 
