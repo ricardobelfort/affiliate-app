@@ -71,42 +71,68 @@
       <h1 class="text-2xl font-bold text-gray-900">Produtos</h1>
       <p class="mt-1 text-sm text-gray-600">Lista de todos os produtos do catálogo.</p>
     </div>
-    <div class="flex items-center gap-3">
-      @if (hasSelection()) {
-        <div class="flex items-center gap-2 px-4 py-2 bg-emerald-50 border border-emerald-200 rounded-lg">
-          <div class="flex items-center justify-center w-6 h-6 bg-emerald-600 rounded-full">
-            <svg class="w-4 h-4 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" />
-            </svg>
+    @if (products().length > 0) {
+      <div class="flex items-center gap-3">
+        @if (hasSelection()) {
+          <div class="flex items-center gap-2 px-4 py-2 bg-emerald-50 border border-emerald-200 rounded-lg">
+            <div class="flex items-center justify-center w-6 h-6 bg-emerald-600 rounded-full">
+              <svg class="w-4 h-4 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" />
+              </svg>
+            </div>
+            <span class="text-sm font-medium text-emerald-900">{{ selectedProducts().size }} selecionado(s)</span>
+            <button
+              (click)="openBulkDeleteDialog()"
+              [disabled]="deletingBulk()"
+              class="ml-2 inline-flex items-center gap-1 h-8 px-3 bg-red-600 text-white text-sm font-medium rounded hover:bg-red-700 disabled:opacity-50 transition-colors cursor-pointer"
+            >
+              <svg class="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
+              </svg>
+              Deletar todos
+            </button>
           </div>
-          <span class="text-sm font-medium text-emerald-900">{{ selectedProducts().size }} selecionado(s)</span>
-          <button
-            (click)="openBulkDeleteDialog()"
-            [disabled]="deletingBulk()"
-            class="ml-2 inline-flex items-center gap-1 h-8 px-3 bg-red-600 text-white text-sm font-medium rounded hover:bg-red-700 disabled:opacity-50 transition-colors cursor-pointer"
-          >
-            <svg class="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
-            </svg>
-            Deletar todos
-          </button>
-        </div>
-      }
-      <a
-        routerLink="/admin/products/new"
-        class="inline-flex items-center gap-2 h-9 px-4 bg-emerald-600 text-white text-sm font-medium rounded hover:bg-emerald-700 transition-colors shadow-sm cursor-pointer"
-      >
-        <svg class="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4" />
-        </svg>
-        Adicionar Produto
-      </a>
-    </div>
+        }
+        <a
+          routerLink="/admin/products/new"
+          class="inline-flex items-center gap-2 h-9 px-4 bg-emerald-600 text-white text-sm font-medium rounded hover:bg-emerald-700 transition-colors shadow-sm cursor-pointer"
+        >
+          <svg class="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4" />
+          </svg>
+          Adicionar Produto
+        </a>
+      </div>
+    }
   </div>
 
   @if (loading()) {
     <div class="flex justify-center py-12">
       <div class="animate-spin rounded-full h-12 w-12 border-b-2 border-emerald-600"></div>
+    </div>
+  } @else if (products().length === 0) {
+    <!-- Empty State -->
+    <div class="bg-white rounded-lg border-2 border-dashed border-gray-300 p-12">
+      <div class="text-center">
+        <svg class="mx-auto h-16 w-16 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M20 13V6a2 2 0 00-2-2H6a2 2 0 00-2 2v7m16 0v5a2 2 0 01-2 2H6a2 2 0 01-2-2v-5m16 0h-2.586a1 1 0 00-.707.293l-2.414 2.414a1 1 0 01-.707.293h-3.172a1 1 0 01-.707-.293l-2.414-2.414A1 1 0 006.586 13H4" />
+        </svg>
+        <h3 class="mt-4 text-lg font-semibold text-gray-900">Nenhum produto cadastrado</h3>
+        <p class="mt-2 text-sm text-gray-600 max-w-sm mx-auto">
+          Comece adicionando seu primeiro produto para aparecer no catálogo.
+        </p>
+        <div class="mt-6">
+          <a
+            routerLink="/admin/products/new"
+            class="inline-flex items-center gap-2 h-10 px-5 bg-emerald-600 text-white text-sm font-medium rounded hover:bg-emerald-700 transition-colors shadow-sm cursor-pointer"
+          >
+            <svg class="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4" />
+            </svg>
+            Adicionar Primeiro Produto
+          </a>
+        </div>
+      </div>
     </div>
   } @else {
     <!-- Table Card -->
