@@ -98,38 +98,111 @@
 
           <!-- Descrição Curta -->
           <div>
-            <label for="shortDescription" class="block text-sm font-medium text-gray-700 mb-1">
-              Descrição Curta <span class="text-red-500">*</span>
-            </label>
+            <div class="flex items-center justify-between mb-1">
+              <label for="shortDescription" class="block text-sm font-medium text-gray-700">
+                Descrição Curta <span class="text-red-500">*</span>
+                <span class="text-xs text-gray-500 font-normal ml-1">(ideal para SEO: 150-160 caracteres)</span>
+              </label>
+              <button
+                type="button"
+                (click)="generateShortDescription()"
+                [disabled]="generatingShortDesc() || !form.get('name')?.value"
+                class="inline-flex items-center gap-1 px-2 py-1 text-xs font-medium text-emerald-700 bg-emerald-50 border border-emerald-200 rounded hover:bg-emerald-100 disabled:opacity-50 disabled:cursor-not-allowed transition-colors cursor-pointer"
+              >
+                @if (generatingShortDesc()) {
+                  <svg class="animate-spin h-3 w-3" fill="none" viewBox="0 0 24 24">
+                    <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+                    <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                  </svg>
+                  <span>Gerando...</span>
+                } @else {
+                  <svg class="h-3 w-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z" />
+                  </svg>
+                  <span>Gerar com IA</span>
+                }
+              </button>
+            </div>
             <input
               type="text"
               id="shortDescription"
               formControlName="shortDescription"
               placeholder="Resumo do produto em uma linha"
+              maxlength="160"
               class="w-full h-9 px-3 border border-gray-300 rounded focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 transition-colors"
               [class.border-red-300]="form.get('shortDescription')?.invalid && form.get('shortDescription')?.touched"
             />
-            @if (form.get('shortDescription')?.invalid && form.get('shortDescription')?.touched) {
-              <p class="mt-1 text-sm text-red-600">{{ getError('shortDescription') }}</p>
-            }
+            <div class="mt-1 flex items-center justify-between">
+              <div>
+                @if (form.get('shortDescription')?.invalid && form.get('shortDescription')?.touched) {
+                  <p class="text-sm text-red-600">{{ getError('shortDescription') }}</p>
+                }
+              </div>
+              <p class="text-xs" 
+                 [class.text-gray-500]="shortDescLength() < 150"
+                 [class.text-emerald-600]="shortDescLength() >= 150 && shortDescLength() <= 160"
+                 [class.text-orange-600]="shortDescLength() > 160">
+                {{ shortDescLength() }}/160 caracteres
+                @if (shortDescLength() >= 150 && shortDescLength() <= 160) {
+                  <span class="ml-1">✓ Ideal para SEO</span>
+                }
+              </p>
+            </div>
           </div>
 
           <!-- Descrição Completa -->
           <div>
-            <label for="description" class="block text-sm font-medium text-gray-700 mb-1">
-              Descrição Completa <span class="text-red-500">*</span>
-            </label>
+            <div class="flex items-center justify-between mb-1">
+              <label for="description" class="block text-sm font-medium text-gray-700">
+                Descrição Completa <span class="text-red-500">*</span>
+                <span class="text-xs text-gray-500 font-normal ml-1">(recomendado: 300-500 caracteres)</span>
+              </label>
+              <button
+                type="button"
+                (click)="generateFullDescription()"
+                [disabled]="generatingFullDesc() || !form.get('name')?.value"
+                class="inline-flex items-center gap-1 px-2 py-1 text-xs font-medium text-emerald-700 bg-emerald-50 border border-emerald-200 rounded hover:bg-emerald-100 disabled:opacity-50 disabled:cursor-not-allowed transition-colors cursor-pointer"
+              >
+                @if (generatingFullDesc()) {
+                  <svg class="animate-spin h-3 w-3" fill="none" viewBox="0 0 24 24">
+                    <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+                    <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                  </svg>
+                  <span>Gerando...</span>
+                } @else {
+                  <svg class="h-3 w-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z" />
+                  </svg>
+                  <span>Gerar com IA</span>
+                }
+              </button>
+            </div>
             <textarea
               id="description"
               formControlName="description"
-              rows="4"
+              rows="6"
               placeholder="Descreva detalhadamente o produto, suas características e benefícios"
+              maxlength="1000"
               class="w-full px-3 py-2 border border-gray-300 rounded focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 transition-colors resize-none"
               [class.border-red-300]="form.get('description')?.invalid && form.get('description')?.touched"
             ></textarea>
-            @if (form.get('description')?.invalid && form.get('description')?.touched) {
-              <p class="mt-1 text-sm text-red-600">{{ getError('description') }}</p>
-            }
+            <div class="mt-1 flex items-center justify-between">
+              <div>
+                @if (form.get('description')?.invalid && form.get('description')?.touched) {
+                  <p class="text-sm text-red-600">{{ getError('description') }}</p>
+                }
+              </div>
+              <p class="text-xs"
+                 [class.text-gray-500]="fullDescLength() < 300"
+                 [class.text-emerald-600]="fullDescLength() >= 300 && fullDescLength() <= 500"
+                 [class.text-orange-600]="fullDescLength() > 500 && fullDescLength() <= 1000"
+                 [class.text-red-600]="fullDescLength() > 1000">
+                {{ fullDescLength() }}/1000 caracteres
+                @if (fullDescLength() >= 300 && fullDescLength() <= 500) {
+                  <span class="ml-1">✓ Ideal para SEO</span>
+                }
+              </p>
+            </div>
           </div>
 
           <div class="grid grid-cols-1 md:grid-cols-2 gap-6">

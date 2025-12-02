@@ -11,5 +11,6 @@ export const environment = {
     region: 'us-east-1',
     host: 'webservices.amazon.com',
     marketplace: 'www.amazon.com'
-  }
+  },
+  geminiApiKey: '' // Configurar GOOGLE_GEMINI_API_KEY na Vercel
 };

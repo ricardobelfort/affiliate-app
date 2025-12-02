@@ -4,6 +4,7 @@ import { CommonModule } from '@angular/common';
 import { ReactiveFormsModule, FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { ProductService } from '../../../services/product.service';
 import { AmazonService } from '../../../services/amazon.service';
+import { AIService } from '../../../services/ai.service';
 import { Category } from '../../../models/product.model';
 
 @Component({
@@ -16,6 +17,7 @@ import { Category } from '../../../models/product.model';
 export class AdminProductFormPage implements OnInit {
   private productService = inject(ProductService);
   private amazonService = inject(AmazonService);
+  private aiService = inject(AIService);
   private router = inject(Router);
   private route = inject(ActivatedRoute);
   private fb = inject(FormBuilder);
@@ -32,6 +34,11 @@ export class AdminProductFormPage implements OnInit {
   amazonUrl = signal('');
   importing = signal(false);
   importError = signal('');
+  
+  generatingShortDesc = signal(false);
+  generatingFullDesc = signal(false);
+  shortDescLength = signal(0);
+  fullDescLength = signal(0);
 
   ngOnInit() {
     this.initForm();
@@ -48,12 +55,21 @@ export class AdminProductFormPage implements OnInit {
   initForm() {
     this.form = this.fb.group({
       name: ['', [Validators.required, Validators.minLength(3)]],
-      shortDescription: ['', [Validators.required, Validators.minLength(10)]],
-      description: ['', [Validators.required, Validators.minLength(20)]],
+      shortDescription: ['', [Validators.required, Validators.minLength(10), Validators.maxLength(160)]],
+      description: ['', [Validators.required, Validators.minLength(20), Validators.maxLength(1000)]],
       price: ['', [Validators.required, Validators.min(0)]],
       category: ['', Validators.required],
       image: ['', [Validators.required, Validators.pattern(/^https?:\/\/.+/)]],
       affiliateLink: ['', [Validators.required, Validators.pattern(/^https?:\/\/.+/)]]
+    });
+
+    // Atualizar contadores quando o valor mudar
+    this.form.get('shortDescription')?.valueChanges.subscribe(value => {
+      this.shortDescLength.set(value?.length || 0);
+    });
+    
+    this.form.get('description')?.valueChanges.subscribe(value => {
+      this.fullDescLength.set(value?.length || 0);
     });
   }
 
@@ -184,6 +200,68 @@ export class AdminProductFormPage implements OnInit {
       this.importError.set('Erro ao importar produto. Tente novamente.');
     } finally {
       this.importing.set(false);
+    }
+  }
+
+  async generateShortDescription() {
+    const productName = this.form.get('name')?.value;
+    if (!productName) {
+      this.importError.set('Preencha o nome do produto primeiro');
+      setTimeout(() => this.importError.set(''), 3000);
+      return;
+    }
+
+    this.generatingShortDesc.set(true);
+    this.importError.set('');
+
+    try {
+      const shortDesc = await this.aiService.generateShortDescription(productName);
+      
+      this.form.patchValue({
+        shortDescription: shortDesc.substring(0, 160)
+      });
+
+      this.successMessage.set('✨ Descrição curta gerada com IA! Ajuste se necessário.');
+      this.showSuccessMessage.set(true);
+      setTimeout(() => this.showSuccessMessage.set(false), 2500);
+    } catch (error) {
+      console.error('Error generating description:', error);
+      this.importError.set('Erro ao gerar descrição com IA. Tente novamente.');
+      setTimeout(() => this.importError.set(''), 3000);
+    } finally {
+      this.generatingShortDesc.set(false);
+    }
+  }
+
+  async generateFullDescription() {
+    const productName = this.form.get('name')?.value;
+    const shortDesc = this.form.get('shortDescription')?.value;
+    
+    if (!productName) {
+      this.importError.set('Preencha o nome do produto primeiro');
+      setTimeout(() => this.importError.set(''), 3000);
+      return;
+    }
+
+    this.generatingFullDesc.set(true);
+    this.importError.set('');
+
+    try {
+      const fullDesc = await this.aiService.generateFullDescription(productName, shortDesc);
+      
+      this.form.patchValue({
+        description: fullDesc.substring(0, 1000)
+      });
+
+      this.successMessage.set('✨ Descrição completa gerada com IA! Ajuste se necessário.');
+      this.showSuccessMessage.set(true);
+      setTimeout(() => this.showSuccessMessage.set(false), 2500);
+    } catch (error) {
+      console.error('Error generating description:', error);
+      this.importError.set('Erro ao gerar descrição com IA. Tente novamente.');
+      setTimeout(() => this.importError.set(''), 3000);
+    } finally {
+      this.generatingFullDesc.set(false);
     }
   }
 }
