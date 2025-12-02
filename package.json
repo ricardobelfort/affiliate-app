@@ -45,6 +45,7 @@
     "@types/express": "^5.0.1",
     "@types/jasmine": "~5.1.0",
     "@types/node": "^20.17.19",
+    "@vercel/node": "^5.5.13",
     "autoprefixer": "^10.4.22",
     "jasmine-core": "~5.9.0",
     "karma": "~6.4.0",

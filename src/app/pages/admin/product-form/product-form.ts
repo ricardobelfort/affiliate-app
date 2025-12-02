@@ -3,6 +3,7 @@ import { Router, ActivatedRoute } from '@angular/router';
 import { CommonModule } from '@angular/common';
 import { ReactiveFormsModule, FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { ProductService } from '../../../services/product.service';
+import { AmazonService } from '../../../services/amazon.service';
 import { Category } from '../../../models/product.model';
 
 @Component({
@@ -14,6 +15,7 @@ import { Category } from '../../../models/product.model';
 })
 export class AdminProductFormPage implements OnInit {
   private productService = inject(ProductService);
+  private amazonService = inject(AmazonService);
   private router = inject(Router);
   private route = inject(ActivatedRoute);
   private fb = inject(FormBuilder);
@@ -26,6 +28,10 @@ export class AdminProductFormPage implements OnInit {
   isEditMode = false;
   showSuccessMessage = signal(false);
   successMessage = signal('');
+  
+  amazonUrl = signal('');
+  importing = signal(false);
+  importError = signal('');
 
   ngOnInit() {
     this.initForm();
@@ -131,5 +137,53 @@ export class AdminProductFormPage implements OnInit {
     if (control?.hasError('min')) return 'Valor deve ser maior que zero';
     if (control?.hasError('pattern')) return 'URL inválida';
     return '';
+  }
+
+  async importFromAmazon() {
+    const url = this.amazonUrl();
+    if (!url) {
+      this.importError.set('Por favor, insira uma URL da Amazon');
+      return;
+    }
+
+    this.importing.set(true);
+    this.importError.set('');
+
+    try {
+      const asin = this.amazonService.extractASIN(url);
+      if (!asin) {
+        this.importError.set('Não foi possível extrair o ASIN desta URL. Verifique se o link é válido.');
+        this.importing.set(false);
+        return;
+      }
+
+      const productData = await this.amazonService.getProductData(asin);
+      
+      if (!productData) {
+        this.importError.set('Não foi possível buscar os dados do produto. Verifique suas credenciais da Amazon PA-API.');
+        this.importing.set(false);
+        return;
+      }
+
+      // Auto-preencher o formulário com os dados importados
+      this.form.patchValue({
+        name: productData.title || '',
+        price: productData.price || '',
+        image: productData.imageUrl || '',
+        affiliateLink: url,
+        shortDescription: productData.title?.substring(0, 100) || '',
+        description: productData.features?.join('\n• ') || productData.title || ''
+      });
+
+      this.successMessage.set('Produto importado com sucesso! Ajuste os campos conforme necessário.');
+      this.showSuccessMessage.set(true);
+      setTimeout(() => this.showSuccessMessage.set(false), 3000);
+
+    } catch (error) {
+      console.error('Error importing from Amazon:', error);
+      this.importError.set('Erro ao importar produto. Tente novamente.');
+    } finally {
+      this.importing.set(false);
+    }
   }
 }
