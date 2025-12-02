@@ -2,6 +2,7 @@ import { Component, signal, OnInit, inject, ChangeDetectionStrategy } from '@ang
 import { CommonModule } from '@angular/common';
 import { ActivatedRoute, Router } from '@angular/router';
 import { ProductService } from '../../services/product.service';
+import { AnalyticsService } from '../../services/analytics.service';
 import { Product, Category, ProductFilters } from '../../models/product.model';
 import { ProductList } from '../../components/product-list/product-list';
 import { Pagination } from '../../components/pagination/pagination';
@@ -18,6 +19,7 @@ export class ProductListPage implements OnInit {
   private productService = inject(ProductService);
   private route = inject(ActivatedRoute);
   private router = inject(Router);
+  private analytics = inject(AnalyticsService);
 
   products = signal<Product[]>([]);
   categories = signal<Category[]>([]);
@@ -96,6 +98,9 @@ export class ProductListPage implements OnInit {
     this.currentPage.set(1);
     this.updateQueryParams();
     this.loadProducts();
+    if (query) {
+      this.analytics.trackSearch(query, this.total());
+    }
   }
 
   onSortChange(event: Event) {
@@ -131,6 +136,9 @@ export class ProductListPage implements OnInit {
     this.currentFilters.update(f => ({ ...f, category: category || undefined }));
     this.currentPage.set(1);
     this.loadProducts();
+    if (category) {
+      this.analytics.trackCategoryView(category);
+    }
   }
 
   onPriceRangeChange(event: Event) {

@@ -3,6 +3,7 @@ import { CommonModule } from '@angular/common';
 import { ActivatedRoute, Router, RouterLink } from '@angular/router';
 import { Meta, Title } from '@angular/platform-browser';
 import { ProductService } from '../../services/product.service';
+import { AnalyticsService } from '../../services/analytics.service';
 import { Product } from '../../models/product.model';
 
 @Component({
@@ -18,6 +19,7 @@ export class ProductDetailPage implements OnInit {
   private router = inject(Router);
   private meta = inject(Meta);
   private title = inject(Title);
+  private analytics = inject(AnalyticsService);
 
   product = signal<Product | undefined>(undefined);
   selectedImage = signal<string>('');
@@ -39,6 +41,7 @@ export class ProductDetailPage implements OnInit {
         this.product.set(product);
         this.selectedImage.set(product.image);
         this.setMetaTags(product);
+        this.analytics.trackProductView(product.name, product.id, product.category);
       } else {
         this.router.navigate(['/']);
       }
@@ -48,6 +51,13 @@ export class ProductDetailPage implements OnInit {
 
   selectImage(image: string) {
     this.selectedImage.set(image);
+  }
+
+  trackAffiliateClick() {
+    const product = this.product();
+    if (product) {
+      this.analytics.trackAffiliateClick(product.name, product.id, product.affiliateLink);
+    }
   }
 
   private setMetaTags(product: Product) {
