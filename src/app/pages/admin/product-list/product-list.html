@@ -26,20 +26,20 @@
       <!-- Total Clicks -->
       <div class="bg-white p-6 rounded-lg border border-gray-200">
         <p class="text-sm text-gray-600 mb-1">Total de Cliques</p>
-        <p class="text-3xl font-bold text-gray-900 mb-2">12.456</p>
+        <p class="text-3xl font-bold text-gray-900 mb-2">{{ totalClicks().toLocaleString('pt-BR') }}</p>
         <p class="text-sm">
-          <span class="text-emerald-600 font-medium">+8,3%</span>
-          <span class="text-gray-500 ml-1">da última semana</span>
+          <span class="text-gray-500">Seus links afiliados</span>
         </p>
       </div>
 
       <!-- Estimated Commission -->
       <div class="bg-white p-6 rounded-lg border border-gray-200">
-        <p class="text-sm text-gray-600 mb-1">Comissão Estimada</p>
-        <p class="text-3xl font-bold text-gray-900 mb-2">R$ 3.245</p>
+        <p class="text-sm text-gray-600 mb-1">Comissão Total</p>
+        <p class="text-3xl font-bold text-emerald-600 mb-2">
+          R$ {{ estimatedCommission().toLocaleString('pt-BR', { minimumFractionDigits: 2 }) }}
+        </p>
         <p class="text-sm">
-          <span class="text-emerald-600 font-medium">+12,7%</span>
-          <span class="text-gray-500 ml-1">da última semana</span>
+          <span class="text-gray-500">Ganhos acumulados</span>
         </p>
       </div>
 
@@ -56,10 +56,9 @@
       <!-- Conversion Rate -->
       <div class="bg-white p-6 rounded-lg border border-gray-200">
         <p class="text-sm text-gray-600 mb-1">Taxa de Conversão</p>
-        <p class="text-3xl font-bold text-gray-900 mb-2">3,8%</p>
+        <p class="text-3xl font-bold text-gray-900 mb-2">{{ conversionRate().toFixed(1) }}%</p>
         <p class="text-sm">
-          <span class="text-emerald-600 font-medium">+0,5%</span>
-          <span class="text-gray-500 ml-1">da última semana</span>
+          <span class="text-gray-500">Cliques que viraram vendas</span>
         </p>
       </div>
     </div>

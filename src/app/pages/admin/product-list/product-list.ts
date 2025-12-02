@@ -4,6 +4,7 @@ import { CommonModule } from '@angular/common';
 import { ProductService } from '../../../services/product.service';
 import { Product } from '../../../models/product.model';
 import { SupabaseService } from '../../../services/supabase.service';
+import { AffiliateService } from '../../../services/affiliate.service';
 
 @Component({
   selector: 'app-admin-product-list',
@@ -16,6 +17,7 @@ export class AdminProductListPage implements OnInit {
   private productService = inject(ProductService);
   private supabase = inject(SupabaseService);
   private router = inject(Router);
+  private affiliateService = inject(AffiliateService);
 
   products = signal<Product[]>([]);
   loading = signal(true);
@@ -34,11 +36,17 @@ export class AdminProductListPage implements OnInit {
   currentPage = signal(1);
   pageSize = signal(10);
   totalProducts = signal(0);
+  
+  // Stats dinâmicos
+  totalClicks = signal(0);
+  estimatedCommission = signal(0);
+  conversionRate = signal(0);
 
   async ngOnInit() {
     await this.loadUserInfo();
     this.setGreeting();
     await this.loadProducts();
+    await this.loadStats();
   }
 
   async loadUserInfo() {
@@ -78,6 +86,17 @@ export class AdminProductListPage implements OnInit {
     } catch (error) {
       console.error('Error loading products:', error);
       this.loading.set(false);
+    }
+  }
+
+  async loadStats() {
+    try {
+      const stats = await this.affiliateService.getUserStats();
+      this.totalClicks.set(stats.totalClicks);
+      this.estimatedCommission.set(stats.totalCommission);
+      this.conversionRate.set(stats.conversionRate);
+    } catch (error) {
+      console.error('Error loading stats:', error);
     }
   }
 
