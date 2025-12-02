@@ -150,6 +150,10 @@ export class AdminProductFormPage implements OnInit {
       const minLength = control.errors?.['minlength'].requiredLength;
       return `Mínimo de ${minLength} caracteres`;
     }
+    if (control?.hasError('maxlength')) {
+      const maxLength = control.errors?.['maxlength'].requiredLength;
+      return `Máximo de ${maxLength} caracteres`;
+    }
     if (control?.hasError('min')) return 'Valor deve ser maior que zero';
     if (control?.hasError('pattern')) return 'URL inválida';
     return '';

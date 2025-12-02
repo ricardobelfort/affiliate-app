@@ -1,4 +1,6 @@
 {
+  "buildCommand": "npm run build",
+  "devCommand": "ng serve --port $PORT",
   "rewrites": [
     {
       "source": "/api/:path*",

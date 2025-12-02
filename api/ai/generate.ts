@@ -42,7 +42,7 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
       ? generateShortPrompt(productName)
       : generateFullPrompt(productName, shortDescription);
 
-    const apiUrl = `https://generativelanguage.googleapis.com/v1beta/models/gemini-pro:generateContent?key=${apiKey}`;
+    const apiUrl = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key=${apiKey}`;
 
     const response = await fetch(apiUrl, {
       method: 'POST',
@@ -57,7 +57,7 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
         }],
         generationConfig: {
           temperature: 0.7,
-          maxOutputTokens: 500,
+          maxOutputTokens: 2000,
           topP: 0.95,
           topK: 40
         }
@@ -73,13 +73,22 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
       });
     }
 
-    const data = await response.json();
+    const data: any = await response.json();
     
     if (!data.candidates || data.candidates.length === 0) {
       return res.status(500).json({ error: 'No response generated' });
     }
 
-    const generatedText = data.candidates[0].content.parts[0].text.trim();
+    // Check if parts array exists and has content
+    const parts = data.candidates[0].content?.parts;
+    if (!parts || parts.length === 0 || !parts[0].text) {
+      return res.status(500).json({ 
+        error: 'No text generated',
+        reason: data.candidates[0].finishReason 
+      });
+    }
+
+    const generatedText = parts[0].text.trim();
 
     return res.status(200).json({ 
       description: generatedText,
