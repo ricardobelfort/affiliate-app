@@ -1,6 +1,8 @@
 import { Routes } from '@angular/router';
 import { ProductListPage } from './pages/product-list-page/product-list-page';
 import { ProductDetailPage } from './pages/product-detail-page/product-detail-page';
+import { ContactPage } from './pages/contact/contact';
+import { FAQPage } from './pages/faq/faq';
 import { LoginPage } from './pages/admin/login/login';
 import { AdminLayout } from './components/admin-layout/admin-layout';
 import { AdminProductListPage } from './pages/admin/product-list/product-list';
@@ -32,8 +34,13 @@ export const routes: Routes = [
   },
   {
     path: 'contato',
-    redirectTo: '',
-    pathMatch: 'full'
+    component: ContactPage,
+    title: 'Central Bom Preço | Contato'
+  },
+  {
+    path: 'faq',
+    component: FAQPage,
+    title: 'Central Bom Preço | Perguntas Frequentes'
   },
   {
     path: 'admin/login',
