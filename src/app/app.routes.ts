@@ -13,22 +13,22 @@ export const routes: Routes = [
   {
     path: '',
     component: ProductListPage,
-    title: 'Catálogo de Produtos | MinhaMarca'
+    title: 'Catálogo de Produtos | Central Bom Preço'
   },
   {
     path: 'produto/:id',
     component: ProductDetailPage,
-    title: 'Produto | MinhaMarca'
+    title: 'Produto | Central Bom Preço'
   },
   {
     path: 'categorias',
     component: ProductListPage,
-    title: 'Categorias | MinhaMarca'
+    title: 'Categorias | Central Bom Preço'
   },
   {
     path: 'ofertas',
     component: ProductListPage,
-    title: 'Ofertas | MinhaMarca'
+    title: 'Ofertas | Central Bom Preço'
   },
   {
     path: 'contato',
@@ -38,7 +38,7 @@ export const routes: Routes = [
   {
     path: 'admin/login',
     component: LoginPage,
-    title: 'Login | Admin'
+    title: 'Login | Central Bom Preço'
   },
   {
     path: 'admin',
