@@ -19,6 +19,11 @@
   <meta property="og:description" content="Encontre os melhores produtos com os melhores preços. Compare preços de eletrônicos, telefones, produtos e muito mais com nossas avaliações confiáveis." />
   <meta property="og:image" content="https://www.centralbompreco.com.br/assets/images/meta-tags.png" />
   <meta property="og:locale" content="pt_BR">
+  <meta property="og:site_name" content="Central Bom Preço" />
+  <meta property="og:image:alt" content="Ícone da Central Bom Preço" />
+  <meta property="og:image:width" content="1200" />
+  <meta property="og:image:height" content="630" />
+
 
   <!-- X (Twitter) -->
   <meta property="twitter:card" content="summary_large_image" />
@@ -33,14 +38,28 @@
   <link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png">
   <link rel="manifest" href="/site.webmanifest">
   <!-- Update canonical URL with your actual domain -->
-  <link rel="canonical" href="https://centralbompreco.com.br">
+  <link rel="canonical" href="https://www.centralbompreco.com.br/">
   
   <!-- Preconnect to improve font loading -->
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 
   <!-- Content Security Policy (CSP) -->
-  <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' https://www.googletagmanager.com 'unsafe-inline'; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com https://* data:; img-src 'self' data: https://www.googletagmanager.com https://*; connect-src 'self' https://*.supabase.co https://www.google-analytics.com ws://localhost:*; object-src 'none'; base-uri 'self'; form-action 'self';">
+  <meta http-equiv="Content-Security-Policy"
+  content="
+    default-src 'self';
+    script-src 'self' 'unsafe-inline' https://www.googletagmanager.com;
+    style-src 'self' 'unsafe-inline' https://fonts.googleapis.com;
+    img-src 'self' data: https: http:;
+    font-src 'self' https://fonts.gstatic.com data:;
+    connect-src 'self' https://*.supabase.co https://www.google-analytics.com https:;
+    frame-src *;
+    child-src *;
+    media-src *;
+    object-src 'none';
+    base-uri 'self';
+  ">
+
 
   <!-- Outras boas práticas de headers (apenas informativo, pois só funcionam via servidor) -->
   <!--
