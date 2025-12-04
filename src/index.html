@@ -10,6 +10,17 @@
   <!-- Preconnect to improve font loading -->
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+
+  <!-- Content Security Policy (CSP) -->
+  <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' https://www.googletagmanager.com 'unsafe-inline'; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com https://* data:; img-src 'self' data: https://www.googletagmanager.com https://*; connect-src 'self' https://*.supabase.co https://www.google-analytics.com ws://localhost:*; object-src 'none'; base-uri 'self'; form-action 'self';">
+
+  <!-- Outras boas práticas de headers (apenas informativo, pois só funcionam via servidor) -->
+  <!--
+    X-Frame-Options: DENY
+    X-Content-Type-Options: nosniff
+    Referrer-Policy: strict-origin-when-cross-origin
+    Permissions-Policy: geolocation=(), microphone=(), camera=()
+  -->
   
   <!-- Google tag (gtag.js) -->
   <script async src="https://www.googletagmanager.com/gtag/js?id=G-SFGVEQ1LSP"></script>
